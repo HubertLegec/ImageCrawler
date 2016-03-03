@@ -5,6 +5,8 @@ package com.legec.imageCrowler;
  */
 public class Main {
     public static void main(String[] args) {
+        RestClient restClient = new RestClient();
+
 
     }
 }
