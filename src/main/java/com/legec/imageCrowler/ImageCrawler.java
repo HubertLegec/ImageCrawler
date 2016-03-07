@@ -18,15 +18,18 @@ import java.util.regex.Pattern;
 public class ImageCrawler extends WebCrawler{
 
     private static final Pattern filters = Pattern
-            .compile(".*(\\.(css|js|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+            .compile(".*(\\.(css|js|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf|rm|smil|wmv|swf|wma|zip|rar|gz))$");
 
     private static final Pattern imgPatterns = Pattern.compile(".*(\\.(bmp|gif|jpe?g|png|tiff?))$");
 
     private static File storageFolder;
     private static List<String> crawlDomains;
+    private static String imageNamePrefix;
+    private static long nameCounter = 1;
 
-    public static void configure(List<String> domain, String storageFolderName) {
+    public static void configure(List<String> domain, String storageFolderName, String imageNamePref) {
         crawlDomains = domain;
+        imageNamePrefix = imageNamePref;
 
         storageFolder = new File(storageFolderName);
         if (!storageFolder.exists()) {
@@ -65,15 +68,22 @@ public class ImageCrawler extends WebCrawler{
 
         // get a unique name for storing this image
         String extension = url.substring(url.lastIndexOf('.'));
-        String hashedName = UUID.randomUUID() + extension;
 
         // store image
-        String filename = storageFolder.getAbsolutePath() + "/" + hashedName;
+        String filename = storageFolder.getAbsolutePath() + "/" + getFileName(extension);
         try {
             Files.write(page.getContentData(), new File(filename));
             logger.info("Stored: {}", url);
         } catch (IOException iox) {
             logger.error("Failed to write file: " + filename, iox);
         }
+    }
+
+    private static String getFileName(String extension){
+        if(imageNamePrefix != null){
+            return imageNamePrefix + (nameCounter++) + extension;
+        }
+
+        return UUID.randomUUID() + extension;
     }
 }

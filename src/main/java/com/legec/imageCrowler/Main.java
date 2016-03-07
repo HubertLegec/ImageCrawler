@@ -5,8 +5,28 @@ package com.legec.imageCrowler;
  */
 public class Main {
     public static void main(String[] args) {
-        RestClient restClient = new RestClient();
+        System.out.println("--- IMAGE CRAWLER by Hubert Legec ---");
+        if(args.length != 1){
+            System.out.println("\n-> Incorrect number of arguments !!!");
+            System.out.println("You should only put one argument - path to configuration file.");
+            return ;
+        } else{
+            String arg = args[0];
+            if(arg.length() > 0 && arg.endsWith(".conf")){
+                ConfigurationParser configurationParser = new ConfigurationParser();
+                boolean validConf = configurationParser.loadConfigurationFromFile(arg);
 
+                if(!validConf){
+                    System.out.println("Incorrect structure of configuration file!!!");
+                    return;
+                }
+
+                CrawlersController crawlersController = new CrawlersController(configurationParser.getConfiguration());
+
+                crawlersController.start();
+                System.out.println(" *** Processing finished. ***");
+            }
+        }
 
     }
 }
