@@ -1,5 +1,6 @@
-package com.legec.imageCrowler;
+package com.legec.imageCrowler.instagram;
 
+import com.legec.imageCrowler.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
