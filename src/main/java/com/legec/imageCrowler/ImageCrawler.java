@@ -8,6 +8,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -25,10 +26,16 @@ public class ImageCrawler extends WebCrawler{
     private static File storageFolder;
     private static List<String> crawlDomains;
     private static String imageNamePrefix;
-    private static long nameCounter = 1;
+    private static int nameCounter = 0;
 
-    public static void configure(List<String> domain, String storageFolderName, String imageNamePref) {
-        crawlDomains = domain;
+    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, List<String> tags) {
+        crawlDomains = new LinkedList<>();
+        domain.forEach( el -> {
+            crawlDomains.add(el);
+            if(el.contains("www.")){
+                crawlDomains.add(el.replace("www.", ""));
+            }
+        });
         imageNamePrefix = imageNamePref;
 
         storageFolder = new File(storageFolderName);
@@ -84,6 +91,11 @@ public class ImageCrawler extends WebCrawler{
             return imageNamePrefix + (nameCounter++) + extension;
         }
 
+        nameCounter++;
         return UUID.randomUUID() + extension;
+    }
+
+    public static int getNameCounter(){
+        return nameCounter;
     }
 }

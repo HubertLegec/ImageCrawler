@@ -17,20 +17,31 @@ public class CrawlersController {
     private static final Logger logger = LoggerFactory.getLogger(CrawlersController.class);
     private int numberOfCrawlers = 1;
     private String storageFolder;
+    private String imageNamePrefix;
     private List<String> seedURLs;
+    private List<String> tags;
+    private int crawlDepth;
+    private int maxNumberOfImages;
     private CrawlController crawlController;
     private boolean ready = false;
 
-    public CrawlersController(ConfigurationDTO config){
+    public CrawlersController(ConfigurationDTO config) {
         this.numberOfCrawlers = config.getNumberOfThreads();
         this.storageFolder = config.getStorageFolder();
         this.seedURLs = config.getSeedURLs();
-
+        this.imageNamePrefix = config.getImageFilePrefix();
+        this.tags = config.getTags();
+        this.crawlDepth = config.getCrawlDepth();
+        this.maxNumberOfImages = config.getMaxNumberOfImages();
     }
 
-    public boolean init(){
+    public boolean init() {
         CrawlConfig crawlConfig = new CrawlConfig();
         crawlConfig.setCrawlStorageFolder(storageFolder);
+        crawlConfig.setIncludeBinaryContentInCrawling(true);
+        if (crawlDepth > 0) {
+            crawlConfig.setMaxDepthOfCrawling(crawlDepth);
+        }
         logger.debug("Storage folder set to: " + storageFolder);
         PageFetcher pageFetcher = new PageFetcher(crawlConfig);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -39,7 +50,7 @@ public class CrawlersController {
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
             logger.debug("Seed URLs set to:");
-            seedURLs.forEach( url -> {
+            seedURLs.forEach(url -> {
                 crawlController.addSeed(url);
                 logger.debug(url);
             });
@@ -51,9 +62,10 @@ public class CrawlersController {
         return true;
     }
 
-    public boolean start(){
-        if(ready){
+    public boolean start() {
+        if (ready) {
             logger.debug("Crawling started. Number of threads: " + numberOfCrawlers);
+            ImageCrawler.configure(seedURLs, storageFolder, imageNamePrefix, tags);
             crawlController.start(ImageCrawler.class, numberOfCrawlers);
             return true;
         }

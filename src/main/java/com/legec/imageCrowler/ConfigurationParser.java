@@ -1,6 +1,7 @@
 package com.legec.imageCrowler;
 
 import com.sun.istack.internal.NotNull;
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +21,27 @@ public class ConfigurationParser {
 
     private String storageFolder;
     private List<String> seedURLs;
+    private List<String> tags;
     private int numberOfThreads;
+    private int maxNumberOfImages;
+    private int crawlDepth;
+
     private String imageNamePrefix;
 
     public ConfigurationParser() {
+        BasicConfigurator.configure();
         this.seedURLs = new LinkedList<>();
+        this.tags = new LinkedList<>();
         this.storageFolder = null;
         this.imageNamePrefix = null;
+        this.maxNumberOfImages = -1;
+        this.crawlDepth = -1;
     }
 
     public boolean loadConfigurationFromFile(@NotNull String pathToConfigFile) {
 
         Path path = Paths.get(pathToConfigFile);
+
         try {
             Files.lines(path).forEach(line -> {
                         if (line.startsWith("storage_folder")) {
@@ -44,9 +54,18 @@ public class ConfigurationParser {
                             imageNamePrefix = getParameterStringValue(line);
                             logger.debug("Image name prefix set to: " + imageNamePrefix);
                         } else if (line.startsWith("seed_urls")) {
-                            seedURLs = parseURLsLine(getParameterStringValue(line));
-                            logger.debug("Seed URLs set to: " + seedURLs.toString());
-                        } else if (line.length() > 0){
+                            seedURLs = parseMultiValueLine(getParameterStringValue(line));
+                            logger.debug("Fetched Seed URLs: " + seedURLs.toString());
+                        } else if (line.startsWith("tags")) {
+                            tags = parseMultiValueLine(getParameterStringValue(line));
+                            logger.debug("Fetched tags: " + tags.toString());
+                        } else if (line.startsWith("max_number_of_images")) {
+                            maxNumberOfImages = getParameterIntValue(line);
+                            logger.debug("Max number of images set to: " + maxNumberOfImages);
+                        } else if (line.startsWith("crawl_depth")) {
+                            crawlDepth = getParameterIntValue(line);
+                            logger.debug("Crawl depth set to: " + crawlDepth);
+                        } else if (line.length() > 0 && !line.startsWith("#")) {
                             logger.debug("Incorrect config line:\n" + line);
                         }
                     }
@@ -71,19 +90,27 @@ public class ConfigurationParser {
         return numberOfThreads;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public String getImageNamePrefix() {
+        return imageNamePrefix;
+    }
+
     public ConfigurationDTO getConfiguration() {
-        return new ConfigurationDTO(storageFolder, seedURLs, numberOfThreads, imageNamePrefix);
+        return new ConfigurationDTO(storageFolder, seedURLs, numberOfThreads, imageNamePrefix, tags, crawlDepth, maxNumberOfImages);
     }
 
     private static int getParameterIntValue(@NotNull String line) {
-        return Integer.parseInt(line.substring(line.indexOf('=')).trim());
+        return Integer.parseInt(line.substring(line.indexOf('=') + 1).trim());
     }
 
     private static String getParameterStringValue(@NotNull String line) {
-        return line.substring(line.indexOf('=')).trim();
+        return line.substring(line.indexOf('=') + 1).trim();
     }
 
-    private static List<String> parseURLsLine(@NotNull String line){
+    private static List<String> parseMultiValueLine(@NotNull String line) {
         List<String> list = Arrays.asList(line.split(";"));
         list.forEach(el -> el.trim());
         return list;

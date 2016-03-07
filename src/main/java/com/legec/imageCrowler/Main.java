@@ -17,11 +17,12 @@ public class Main {
                 boolean validConf = configurationParser.loadConfigurationFromFile(arg);
 
                 if(!validConf){
-                    System.out.println("Incorrect structure of configuration file!!!");
+                    System.out.println("Incorrect structure of configuration file or file doesn't exist!!!");
                     return;
                 }
 
                 CrawlersController crawlersController = new CrawlersController(configurationParser.getConfiguration());
+                crawlersController.init();
 
                 crawlersController.start();
                 System.out.println(" *** Processing finished. ***");
