@@ -1,19 +1,60 @@
 package com.legec.imageCrowler.instagram;
 
-import com.legec.imageCrowler.RestClient;
+import com.legec.imageCrowler.GlobalConfig;
+import com.legec.imageCrowler.utils.ConcurentExecutionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Hubert on 02.03.2016.
  */
 public class InstagramCrawlController {
-    private static String INSTA_TOKEN = "1935229135.1677ed0.43af0f66a71d4653857c8a6e5e8866e3";
     private static final Logger logger = LoggerFactory.getLogger(InstagramCrawlController.class);
-    private RestClient restClient;
+    private boolean ready = false;
+    private Set<String> urls;
+
+    InstagramApi instagramApi;
 
     public InstagramCrawlController(){
-        this.restClient = new RestClient("https://api.instagram.com/v1");
+        urls = new HashSet<>();
+    }
+
+    public boolean init(){
+        instagramApi = new InstagramApi(GlobalConfig.getInstaToken());
+        ready = true;
+        return true;
+    }
+
+    public boolean start(){
+        if(ready){
+            GlobalConfig.getTags().forEach( tag -> {
+                List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getMaxElementsMatchTag());
+                urls.addAll(result);
+            });
+
+            saveImagesFromUrls();
+            return true;
+        }
+        return false;
+    }
+
+
+    private boolean saveImagesFromUrls(){
+        logger.debug("Saving instagram images start");
+        try {
+            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getStorageFolder() + "\\instagram");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.debug("Saving instagram images finish. Error!!!");
+            return false;
+        }
+
+        logger.debug("Saving instagram images finish. Success!!!");
+        return true;
     }
 
 }

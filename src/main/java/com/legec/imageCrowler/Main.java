@@ -1,5 +1,8 @@
 package com.legec.imageCrowler;
 
+import com.legec.imageCrowler.instagram.InstagramCrawlController;
+import com.legec.imageCrowler.utils.RunMode;
+
 /**
  * Created by Hubert on 02.03.2016.
  */
@@ -21,10 +24,17 @@ public class Main {
                     return;
                 }
 
-                CrawlersController crawlersController = new CrawlersController(configurationParser.getConfiguration());
-                crawlersController.init();
-
-                crawlersController.start();
+                RunMode mode = GlobalConfig.getRunMode();
+                if(mode == RunMode.DEFAULT || mode == RunMode.ALL || mode == RunMode.WEB_ONLY) {
+                    CrawlersController crawlersController = new CrawlersController();
+                    crawlersController.init();
+                    crawlersController.start();
+                }
+                if(mode == RunMode.DEFAULT || mode == RunMode.ALL || mode == RunMode.INSTA_ONLY){
+                    InstagramCrawlController crawlController = new InstagramCrawlController();
+                    crawlController.init();
+                    crawlController.start();
+                }
                 System.out.println(" *** Processing finished. ***");
             }
         }

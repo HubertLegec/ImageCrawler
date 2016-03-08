@@ -1,5 +1,6 @@
 package com.legec.imageCrowler;
 
+import com.legec.imageCrowler.utils.RunMode;
 import com.sun.istack.internal.NotNull;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -25,8 +26,10 @@ public class ConfigurationParser {
     private int numberOfThreads;
     private int maxNumberOfImages;
     private int crawlDepth;
-
     private String imageNamePrefix;
+    private int maxElementsMatchTag;
+    private RunMode runMode;
+    private String instaToken;
 
     public ConfigurationParser() {
         BasicConfigurator.configure();
@@ -65,41 +68,37 @@ public class ConfigurationParser {
                         } else if (line.startsWith("crawl_depth")) {
                             crawlDepth = getParameterIntValue(line);
                             logger.debug("Crawl depth set to: " + crawlDepth);
+                        } else if(line.startsWith("max_el_match_tag")){
+                            maxElementsMatchTag = getParameterIntValue(line);
+                            logger.debug("Max elements match tag set to: " + maxElementsMatchTag);
+                        } else if(line.startsWith("instagram_token")){
+                            instaToken = getParameterStringValue(line);
+                            logger.debug("Instagram token set to: " + instaToken);
+                        } else if(line.startsWith("run_mode")){
+                            runMode = RunMode.valueOf(getParameterStringValue(line));
+                            logger.debug("Run mode set to: " + runMode.toString());
                         } else if (line.length() > 0 && !line.startsWith("#")) {
                             logger.debug("Incorrect config line:\n" + line);
                         }
                     }
             );
+
+            GlobalConfig.setStorageFolder(storageFolder);
+            GlobalConfig.setNumberOfThreads(numberOfThreads);
+            GlobalConfig.setImageFilePrefix(imageNamePrefix);
+            GlobalConfig.setSeedURLs(seedURLs);
+            GlobalConfig.setTags(tags);
+            GlobalConfig.setMaxNumberOfImages(maxNumberOfImages);
+            GlobalConfig.setCrawlDepth(crawlDepth);
+            GlobalConfig.setMaxElementsMatchTag(maxElementsMatchTag);
+            GlobalConfig.setInstaToken(instaToken);
+            GlobalConfig.setRunMode(runMode);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
         return true;
-    }
-
-    public String getStorageFolder() {
-        return storageFolder;
-    }
-
-    public List<String> getSeedURLs() {
-        return seedURLs;
-    }
-
-    public int getNumberOfThreads() {
-        return numberOfThreads;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public String getImageNamePrefix() {
-        return imageNamePrefix;
-    }
-
-    public ConfigurationDTO getConfiguration() {
-        return new ConfigurationDTO(storageFolder, seedURLs, numberOfThreads, imageNamePrefix, tags, crawlDepth, maxNumberOfImages);
     }
 
     private static int getParameterIntValue(@NotNull String line) {
