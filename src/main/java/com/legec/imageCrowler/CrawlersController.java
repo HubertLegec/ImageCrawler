@@ -1,5 +1,6 @@
 package com.legec.imageCrowler;
 
+import com.legec.imageCrowler.utils.Callback;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -17,9 +18,6 @@ public class CrawlersController {
     private static final Logger logger = LoggerFactory.getLogger(CrawlersController.class);
     private CrawlController crawlController;
     private boolean ready = false;
-
-    public CrawlersController() {
-    }
 
     public boolean init() {
         CrawlConfig crawlConfig = new CrawlConfig();
@@ -52,9 +50,24 @@ public class CrawlersController {
         if (ready) {
             logger.debug("Crawling started. Number of threads: " + GlobalConfig.getNumberOfThreads());
             ImageCrawler.configure(GlobalConfig.getSeedURLs(), GlobalConfig.getStorageFolder(), GlobalConfig.getImageFilePrefix(), GlobalConfig.getTags());
-            crawlController.start(ImageCrawler.class, GlobalConfig.getNumberOfThreads());
+            crawlController.startNonBlocking(ImageCrawler.class, GlobalConfig.getNumberOfThreads());
             return true;
         }
         return false;
+    }
+
+    public void startWithCallback(Callback callback){
+        logger.debug("Crawling started. Number of threads: " + GlobalConfig.getNumberOfThreads());
+        ImageCrawler.configure(GlobalConfig.getSeedURLs(), GlobalConfig.getStorageFolder(), GlobalConfig.getImageFilePrefix(), GlobalConfig.getTags());
+        crawlController.startNonBlocking(ImageCrawler.class, GlobalConfig.getNumberOfThreads());
+        Thread thread = new Thread(() -> {
+            crawlController.waitUntilFinish();
+            callback.execute();
+        });
+        thread.start();
+    }
+
+    public void stop(){
+        crawlController.shutdown();
     }
 }
