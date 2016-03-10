@@ -29,6 +29,7 @@ public class Main extends Application {
     //GUI
     private ObservableList<String> urlObservableList = FXCollections.observableArrayList();
     private ObservableList<String> tagObservableList = FXCollections.observableArrayList();
+    private ObservableList<String> instaTagObservableList = FXCollections.observableArrayList();
     private ObservableList<Integer> numberOfCrowlersList = FXCollections.observableArrayList();
     private ObservableList<String> crawlingDepth = FXCollections.observableArrayList();
     private BooleanProperty urlListNotEmpty = new SimpleBooleanProperty(false);
@@ -52,11 +53,22 @@ public class Main extends Application {
     private Button runButton;
     @FXML
     private ProgressIndicator progressIndicator;
+    @FXML
+    private TextField instaToken;
+    @FXML
+    private TextField instaStorageFolderTF;
+    @FXML
+    private TextField instaNamePrefix;
+    @FXML
+    private TextField instaNumberOfFetchedImages;
+    @FXML
+    private ListView<String> instaTagList;
     //-----------------------------
     private CrawlersController crawlersController = new CrawlersController();
     private InstagramCrawlController instagramCrawlController = new InstagramCrawlController();
     private ConfigurationParser configurationParser = new ConfigurationParser();
     private boolean crawlerWorks = false;
+    private boolean instaWorks = false;
 
 
     public static void main(String[] args) {
@@ -109,6 +121,8 @@ public class Main extends Application {
         crawlingDepthCB.setValue("INFINITY");
 
         runButton.disableProperty().bind(storageFolderTF.textProperty().isEmpty().or(urlListNotEmpty.not()));
+
+        instaTagList.setItems(instaTagObservableList);
     }
 
     @FXML
@@ -188,16 +202,31 @@ public class Main extends Application {
 
     @FXML
     private void onAddInstaTag(){
-
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New tag");
+        dialog.setHeaderText("Add new tag:");
+        Optional<String> value = dialog.showAndWait();
+        value.ifPresent(v -> instaTagObservableList.add(v) );
     }
 
     @FXML
     private void onRemoveInstaTag(){
-
+        instaTagObservableList.remove(instaTagList.getSelectionModel().getSelectedIndex());
     }
 
     @FXML
     private void onInstaRun(){
+        instagramCrawlController.init();
+        instagramCrawlController.start();
+    }
 
+    @FXML
+    private void onInstaStorageFolder(){
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Storage folder");
+        File dir = chooser.showDialog(primaryStage.getScene().getWindow());
+        if(dir != null){
+            instaStorageFolderTF.setText(dir.getPath());
+        }
     }
 }
