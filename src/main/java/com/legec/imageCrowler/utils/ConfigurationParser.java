@@ -1,6 +1,5 @@
-package com.legec.imageCrowler;
+package com.legec.imageCrowler.utils;
 
-import com.legec.imageCrowler.utils.RunMode;
 import com.sun.istack.internal.NotNull;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ public class ConfigurationParser {
     private int crawlDepth;
     private String imageNamePrefix;
     private int maxElementsMatchTag;
-    private RunMode runMode;
     private String instaToken;
 
     public ConfigurationParser() {
@@ -74,9 +72,6 @@ public class ConfigurationParser {
                         } else if(line.startsWith("instagram_token")){
                             instaToken = getParameterStringValue(line);
                             logger.debug("Instagram token set to: " + instaToken);
-                        } else if(line.startsWith("run_mode")){
-                            runMode = RunMode.valueOf(getParameterStringValue(line));
-                            logger.debug("Run mode set to: " + runMode.toString());
                         } else if (line.length() > 0 && !line.startsWith("#")) {
                             logger.debug("Incorrect config line:\n" + line);
                         }
@@ -92,7 +87,6 @@ public class ConfigurationParser {
             GlobalConfig.setCrawlDepth(crawlDepth);
             GlobalConfig.setMaxElementsMatchTag(maxElementsMatchTag);
             GlobalConfig.setInstaToken(instaToken);
-            GlobalConfig.setRunMode(runMode);
         } catch (IOException e) {
             e.printStackTrace();
             return false;

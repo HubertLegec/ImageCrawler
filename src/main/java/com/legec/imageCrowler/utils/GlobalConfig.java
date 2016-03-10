@@ -1,6 +1,4 @@
-package com.legec.imageCrowler;
-
-import com.legec.imageCrowler.utils.RunMode;
+package com.legec.imageCrowler.utils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,14 +8,16 @@ import java.util.List;
  */
 public class GlobalConfig {
     private static String storageFolder;
+    private static String instaStorageFolder;
     private static List<String> seedURLs = new LinkedList<>();
     private static List<String> tags = new LinkedList<>();
+    private static List<String> instaTags = new LinkedList<>();
     private static int numberOfThreads;
     private static String imageFilePrefix;
+    private static String instaImageFilePrefix;
     private static int crawlDepth;
     private static int maxNumberOfImages;
     private static int maxElementsMatchTag;
-    private static RunMode runMode;
     private static String instaToken;
 
     public static String getStorageFolder() {
@@ -78,11 +78,19 @@ public class GlobalConfig {
 
     public static void setMaxElementsMatchTag(int maxElementsMatchTag) { GlobalConfig.maxElementsMatchTag = maxElementsMatchTag; }
 
-    public static RunMode getRunMode() { return runMode; }
-
-    public static void setRunMode(RunMode runMode) { GlobalConfig.runMode = runMode; }
-
     public static String getInstaToken() { return instaToken; }
 
     public static void setInstaToken(String instaToken) { GlobalConfig.instaToken = instaToken; }
+
+    public static String getInstaStorageFolder() { return instaStorageFolder; }
+
+    public static void setInstaStorageFolder(String instaStorageFolder) { GlobalConfig.instaStorageFolder = instaStorageFolder; }
+
+    public static String getInstaImageFilePrefix() { return instaImageFilePrefix; }
+
+    public static void setInstaImageFilePrefix(String instaImageFilePrefix) { GlobalConfig.instaImageFilePrefix = instaImageFilePrefix; }
+
+    public static List<String> getInstaTags() { return instaTags; }
+
+    public static void setInstaTags(List<String> instaTags) { GlobalConfig.instaTags = instaTags; }
 }

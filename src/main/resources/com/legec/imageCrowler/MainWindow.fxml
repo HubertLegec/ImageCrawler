@@ -220,7 +220,7 @@
                                           <HBox alignment="CENTER_LEFT" spacing="10.0">
                                              <children>
                                                 <Label text="Storage folder:" />
-                                                <TextField fx:id="instaStorageFolderTF" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="instaStorageFolderTF" editable="false" HBox.hgrow="ALWAYS" />
                                                 <Button fx:id="instaStorageFolderButton" mnemonicParsing="false" onAction="#onInstaStorageFolder" text="..." />
                                              </children>
                                              <VBox.margin>

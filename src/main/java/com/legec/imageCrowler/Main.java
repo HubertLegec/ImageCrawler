@@ -1,6 +1,8 @@
 package com.legec.imageCrowler;
 
 import com.legec.imageCrowler.instagram.InstagramCrawlController;
+import com.legec.imageCrowler.utils.ConfigurationParser;
+import com.legec.imageCrowler.utils.GlobalConfig;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -32,7 +34,8 @@ public class Main extends Application {
     private ObservableList<String> instaTagObservableList = FXCollections.observableArrayList();
     private ObservableList<Integer> numberOfCrowlersList = FXCollections.observableArrayList();
     private ObservableList<String> crawlingDepth = FXCollections.observableArrayList();
-    private BooleanProperty urlListNotEmpty = new SimpleBooleanProperty(false);
+    private BooleanProperty urlListEmpty = new SimpleBooleanProperty(true);
+    private BooleanProperty instaTagListEmpty = new SimpleBooleanProperty(true);
     @FXML
     private ListView<String> urlList;
     @FXML
@@ -52,7 +55,11 @@ public class Main extends Application {
     @FXML
     private Button runButton;
     @FXML
+    private Button instaRunButton;
+    @FXML
     private ProgressIndicator progressIndicator;
+    @FXML
+    private ProgressIndicator instaProgressIndicator;
     @FXML
     private TextField instaToken;
     @FXML
@@ -101,26 +108,28 @@ public class Main extends Application {
         }
     }
 
-    private void initControls(){
+    private void initControls() {
         urlList.setItems(urlObservableList);
         tagList.setItems(tagObservableList);
         removeTagButton.disableProperty().bind(tagList.getSelectionModel().selectedItemProperty().isNull());
         removeURLButton.disableProperty().bind(urlList.getSelectionModel().selectedItemProperty().isNull());
 
-        for(int i=1; i <=10; i++){
+        for (int i = 1; i <= 10; i++) {
             numberOfCrowlersList.add(i);
         }
         numberOfCrowlersCB.setItems(numberOfCrowlersList);
         numberOfCrowlersCB.setValue(5);
 
         crawlingDepth.add("INFINITY");
-        for(int i=1; i <= 10; i++){
+        for (int i = 1; i <= 10; i++) {
             crawlingDepth.add(String.valueOf(i));
         }
         crawlingDepthCB.setItems(crawlingDepth);
         crawlingDepthCB.setValue("INFINITY");
 
-        runButton.disableProperty().bind(storageFolderTF.textProperty().isEmpty().or(urlListNotEmpty.not()));
+        runButton.disableProperty().bind(storageFolderTF.textProperty().isEmpty().or(urlListEmpty));
+
+        instaRunButton.disableProperty().bind(instaStorageFolderTF.textProperty().isEmpty().or(instaTagListEmpty).or(instaToken.textProperty().isEmpty()));
 
         instaTagList.setItems(instaTagObservableList);
     }
@@ -133,15 +142,15 @@ public class Main extends Application {
         Optional<String> value = dialog.showAndWait();
         value.ifPresent(v -> {
             urlObservableList.add(v);
-            urlListNotEmpty.setValue(true);
+            urlListEmpty.setValue(false);
         });
     }
 
     @FXML
     private void onRemoveSeedURL() {
         urlObservableList.remove(urlList.getSelectionModel().getSelectedIndex());
-        if(urlList.getItems().size() == 0){
-            urlListNotEmpty.setValue(false);
+        if (urlList.getItems().size() == 0) {
+            urlListEmpty.setValue(true);
         }
     }
 
@@ -151,7 +160,7 @@ public class Main extends Application {
         dialog.setTitle("New tag");
         dialog.setHeaderText("Add new tag:");
         Optional<String> value = dialog.showAndWait();
-        value.ifPresent(v -> tagObservableList.add(v) );
+        value.ifPresent(v -> tagObservableList.add(v));
     }
 
     @FXML
@@ -164,14 +173,14 @@ public class Main extends Application {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Storage folder");
         File dir = chooser.showDialog(primaryStage.getScene().getWindow());
-        if(dir != null){
+        if (dir != null) {
             storageFolderTF.setText(dir.getPath());
         }
     }
 
     @FXML
     private void onCrawlerRun() {
-        if(!crawlerWorks) {
+        if (!crawlerWorks) {
             GlobalConfig.setTags(tagList.getItems());
             GlobalConfig.setSeedURLs(urlList.getItems());
             if (crawlingDepthCB.getValue().equals("INFINITY")) {
@@ -201,31 +210,57 @@ public class Main extends Application {
     }
 
     @FXML
-    private void onAddInstaTag(){
+    private void onAddInstaTag() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New tag");
         dialog.setHeaderText("Add new tag:");
         Optional<String> value = dialog.showAndWait();
-        value.ifPresent(v -> instaTagObservableList.add(v) );
+        value.ifPresent(v -> {
+            instaTagObservableList.add(v);
+            instaTagListEmpty.setValue(false);
+        });
     }
 
     @FXML
-    private void onRemoveInstaTag(){
+    private void onRemoveInstaTag() {
         instaTagObservableList.remove(instaTagList.getSelectionModel().getSelectedIndex());
+        if(instaTagList.getItems().size() == 0){
+            instaTagListEmpty.setValue(true);
+        }
     }
 
     @FXML
-    private void onInstaRun(){
-        instagramCrawlController.init();
-        instagramCrawlController.start();
+    private void onInstaRun() {
+        if (!instaWorks) {
+            GlobalConfig.setInstaTags(instaTagObservableList);
+            GlobalConfig.setInstaToken(instaToken.getText());
+            GlobalConfig.setInstaImageFilePrefix(instaNamePrefix.getText());
+            GlobalConfig.setInstaStorageFolder(instaStorageFolderTF.getText());
+            if (instaNumberOfFetchedImages.getText() != null && instaNumberOfFetchedImages.getText().length() > 0) {
+                GlobalConfig.setMaxElementsMatchTag(Integer.valueOf(instaNumberOfFetchedImages.getText()));
+            } else {
+                GlobalConfig.setMaxElementsMatchTag(-1);
+            }
+            instagramCrawlController.init();
+            instagramCrawlController.startWithCallback(() -> {
+                Platform.runLater(() -> instaRunButton.setText("Run"));
+                instaWorks = false;
+                instaProgressIndicator.setVisible(false);
+            });
+            instaWorks = true;
+            instaProgressIndicator.setVisible(true);
+            instaRunButton.setText("Cancel");
+        } else {
+            instagramCrawlController.stop();
+        }
     }
 
     @FXML
-    private void onInstaStorageFolder(){
+    private void onInstaStorageFolder() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Storage folder");
         File dir = chooser.showDialog(primaryStage.getScene().getWindow());
-        if(dir != null){
+        if (dir != null) {
             instaStorageFolderTF.setText(dir.getPath());
         }
     }

@@ -1,13 +1,23 @@
 package com.legec.imageCrowler.instagram;
 
-import com.legec.imageCrowler.GlobalConfig;
+import com.legec.imageCrowler.utils.Callback;
+import com.legec.imageCrowler.utils.DownloadImageFromURLTask;
+import com.legec.imageCrowler.utils.GlobalConfig;
 import com.legec.imageCrowler.utils.ConcurentExecutionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Hubert on 02.03.2016.
@@ -16,22 +26,23 @@ public class InstagramCrawlController {
     private static final Logger logger = LoggerFactory.getLogger(InstagramCrawlController.class);
     private boolean ready = false;
     private Set<String> urls;
+    private CompletableFuture completableFuture;
 
     InstagramApi instagramApi;
 
-    public InstagramCrawlController(){
+    public InstagramCrawlController() {
         urls = new HashSet<>();
     }
 
-    public boolean init(){
+    public boolean init() {
         instagramApi = new InstagramApi(GlobalConfig.getInstaToken());
         ready = true;
         return true;
     }
 
-    public boolean start(){
-        if(ready){
-            GlobalConfig.getTags().forEach( tag -> {
+    public boolean start() {
+        if (ready) {
+            GlobalConfig.getInstaTags().forEach(tag -> {
                 List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getMaxElementsMatchTag());
                 urls.addAll(result);
             });
@@ -42,8 +53,40 @@ public class InstagramCrawlController {
         return false;
     }
 
+    public void startWithCallback(Callback callback) {
+        completableFuture = CompletableFuture.runAsync(() -> {
+            try {
+                Files.createDirectories(Paths.get(GlobalConfig.getInstaStorageFolder()));
+                GlobalConfig.getInstaTags().forEach(tag -> {
+                    List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getMaxElementsMatchTag());
+                    urls.addAll(result);
+                });
+                for (String u : urls) {
+                    URL url = new URL(u);
+                    BufferedImage img = ImageIO.read(url);
+                    String name = url.getPath();
+                    name = name.substring(name.lastIndexOf("/"));
+                    File output = new File(GlobalConfig.getInstaStorageFolder(), name);
+                    ImageIO.write(img, "jpg", output);
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+        completableFuture.thenRun(() -> callback.execute());
+        completableFuture.exceptionally( e -> {
+            System.out.println("EXCEPTIONALLY");
+            callback.execute();
+            return this;
+        });
+    }
 
-    private boolean saveImagesFromUrls(){
+    public void stop(){
+        completableFuture.cancel(false);
+    }
+
+
+    private boolean saveImagesFromUrls() {
         logger.debug("Saving instagram images start");
         try {
             ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getStorageFolder() + "\\instagram");
