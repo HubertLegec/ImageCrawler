@@ -30,9 +30,7 @@ public class CrawlersController {
 
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
-            GlobalConfig.getInstance().getSeedURLs().forEach(url -> {
-                crawlController.addSeed(url);
-            });
+            GlobalConfig.getInstance().getSeedURLs().forEach(url -> crawlController.addSeed(url) );
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -44,16 +42,18 @@ public class CrawlersController {
     public boolean start() {
         if (ready) {
             GlobalConfig config = GlobalConfig.getInstance();
-            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
+            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(),
+                    config.getMaxNumberOfImages(), config.getTags(), config.areTagsActive(), () -> crawlController.shutdown());
             crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
             return true;
         }
         return false;
     }
 
-    public void startWithCallback(Callback callback){
+    public void startWithCallback(Callback callback) {
         GlobalConfig config = GlobalConfig.getInstance();
-        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
+        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(),
+                config.getMaxNumberOfImages(), config.getTags(), config.areTagsActive(), () -> crawlController.shutdown());
         crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {
             crawlController.waitUntilFinish();
@@ -62,7 +62,7 @@ public class CrawlersController {
         thread.start();
     }
 
-    public void stop(){
+    public void stop() {
         crawlController.shutdown();
     }
 }

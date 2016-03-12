@@ -46,6 +46,8 @@ public class CrawlerTabController {
     private Button runButton;
     @FXML
     private ProgressIndicator progressIndicator;
+    @FXML
+    private TextField maxNumberOfImages;
 
     private CrawlersController crawlersController = new CrawlersController();
     private boolean crawlerWorks = false;
@@ -153,6 +155,11 @@ public class CrawlerTabController {
         } else {
             config.setImageFilePrefix(null);
         }
+        if(maxNumberOfImages.getText() != null && maxNumberOfImages.getText().length() > 0){
+            config.setMaxNumberOfImages(Integer.parseInt(maxNumberOfImages.getText()));
+        }else{
+            config.setMaxNumberOfImages(-1);
+        }
         config.setStorageFolder(storageFolderTF.getText());
         config.setNumberOfThreads(numberOfCrowlersCB.getValue());
     }
@@ -169,6 +176,11 @@ public class CrawlerTabController {
             crawlingDepthCB.setValue("INFINITY");
         } else {
             crawlingDepthCB.setValue(String.valueOf(config.getCrawlDepth()));
+        }
+        if(config.getMaxNumberOfImages() > 0){
+            maxNumberOfImages.setText(String.valueOf(config.getMaxNumberOfImages()));
+        } else{
+            maxNumberOfImages.clear();
         }
         imageNamePrefixTF.setText(config.getImageFilePrefix());
         storageFolderTF.setText(config.getStorageFolder());

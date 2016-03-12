@@ -1,6 +1,7 @@
 package com.legec.imageCrowler.crawler;
 
 import com.google.common.io.Files;
+import com.legec.imageCrowler.utils.Callback;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.BinaryParseData;
@@ -27,9 +28,16 @@ public class ImageCrawler extends WebCrawler{
     private static List<String> crawlDomains;
     private static String imageNamePrefix;
     private static int nameCounter = 0;
+    private static boolean tagsActive;
+    private static int maxNumberOfImages;
+    private static Callback stopCallback;
+    private static boolean callbackSent = false;
 
-    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, List<String> tags) {
+    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, int maxNumOfImg, List<String> tags, boolean areTagsActive, Callback callback) {
         crawlDomains = new LinkedList<>();
+        tagsActive = areTagsActive;
+        maxNumberOfImages = maxNumOfImg;
+        stopCallback = callback;
         domain.forEach( el -> {
             crawlDomains.add(el);
             if(el.contains("www.")){
@@ -46,6 +54,14 @@ public class ImageCrawler extends WebCrawler{
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
+        if(maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages){
+            if(!callbackSent){
+                callbackSent = true;
+                stopCallback.execute();
+            }
+            return false;
+        }
+
         String href = url.getURL().toLowerCase();
         if (filters.matcher(href).matches()) {
             return false;
@@ -65,6 +81,13 @@ public class ImageCrawler extends WebCrawler{
 
     @Override
     public void visit(Page page) {
+        if(maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages){
+            if(!callbackSent){
+                callbackSent = true;
+                stopCallback.execute();
+            }
+            return;
+        }
         String url = page.getWebURL().getURL();
 
         // We are only interested in processing images which are bigger than 10k
