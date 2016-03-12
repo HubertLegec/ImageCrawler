@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * Created by Hubert on 02.03.2016.
  */
 public class CrawlersController {
-    private static final Logger logger = LoggerFactory.getLogger(CrawlersController.class);
     private CrawlController crawlController;
     private boolean ready = false;
 
@@ -25,17 +24,14 @@ public class CrawlersController {
         if (GlobalConfig.getInstance().getCrawlDepth() > 0) {
             crawlConfig.setMaxDepthOfCrawling(GlobalConfig.getInstance().getCrawlDepth());
         }
-        logger.debug("Storage folder set to: " + GlobalConfig.getInstance().getStorageFolder());
         PageFetcher pageFetcher = new PageFetcher(crawlConfig);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
-            logger.debug("Seed URLs set to:");
             GlobalConfig.getInstance().getSeedURLs().forEach(url -> {
                 crawlController.addSeed(url);
-                logger.debug(url);
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,7 +44,6 @@ public class CrawlersController {
     public boolean start() {
         if (ready) {
             GlobalConfig config = GlobalConfig.getInstance();
-            logger.debug("Crawling started. Number of threads: " + config.getNumberOfThreads());
             ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
             crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
             return true;
@@ -58,7 +53,6 @@ public class CrawlersController {
 
     public void startWithCallback(Callback callback){
         GlobalConfig config = GlobalConfig.getInstance();
-        logger.debug("Crawling started. Number of threads: " + config.getNumberOfThreads());
         ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
         crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {

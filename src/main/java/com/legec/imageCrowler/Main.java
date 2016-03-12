@@ -255,6 +255,9 @@ public class Main extends Application {
             //----
             tagObservableList.setAll(config.getTags());
             urlObservableList.setAll(config.getSeedURLs());
+            if(urlObservableList.size() > 0){
+                urlListEmpty.setValue(false);
+            }
             tagsCheckBox.setSelected(config.areTagsActive());
             if(config.getCrawlDepth() == -1) {
                 crawlingDepthCB.setValue("INFINITY");
@@ -266,6 +269,9 @@ public class Main extends Application {
             numberOfCrowlersCB.setValue(config.getNumberOfThreads());
             //---
             instaTagObservableList.setAll(config.getInstaTags());
+            if(instaTagObservableList.size() > 0){
+                instaTagListEmpty.setValue(false);
+            }
             instaToken.setText(config.getInstaToken());
             instaNamePrefix.setText(config.getInstaImageFilePrefix());
             instaStorageFolderTF.setText(config.getInstaStorageFolder());

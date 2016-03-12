@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
  * Created by Hubert on 02.03.2016.
  */
 public class InstagramCrawlController {
-    private static final Logger logger = LoggerFactory.getLogger(InstagramCrawlController.class);
     private boolean ready = false;
     private Set<String> urls;
     private CompletableFuture completableFuture;
@@ -75,7 +74,6 @@ public class InstagramCrawlController {
         });
         completableFuture.thenRun(() -> callback.execute());
         completableFuture.exceptionally( e -> {
-            System.out.println("EXCEPTIONALLY");
             callback.execute();
             return this;
         });
@@ -87,16 +85,12 @@ public class InstagramCrawlController {
 
 
     private boolean saveImagesFromUrls() {
-        logger.debug("Saving instagram images start");
         try {
-            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getStorageFolder() + "\\instagram");
+            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getInstaStorageFolder());
         } catch (Exception e) {
             e.printStackTrace();
-            logger.debug("Saving instagram images finish. Error!!!");
             return false;
         }
-
-        logger.debug("Saving instagram images finish. Success!!!");
         return true;
     }
 
