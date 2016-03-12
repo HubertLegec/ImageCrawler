@@ -1,283 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane id="lecznica" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane id="lecznica" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null"
+            xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onLoadConfig" text="Load configurration" />
-                  <MenuItem mnemonicParsing="false" onAction="#onSaveConfig" text="Save configuration" />
-                        <MenuItem mnemonicParsing="false" text="Exit" />
+                        <MenuItem mnemonicParsing="false" onAction="#onLoadConfig" text="Load configurration"/>
+                        <MenuItem mnemonicParsing="false" onAction="#onSaveConfig" text="Save configuration"/>
+                        <MenuItem mnemonicParsing="false" text="Exit"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" text="About"/>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
     </top>
     <center>
-        <TabPane layoutX="114.0" layoutY="71.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <TabPane layoutX="114.0" layoutY="71.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
+                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
                 <Tab text="Crawler">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0">
-                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <VBox alignment="TOP_CENTER" prefWidth="200.0" spacing="5.0">
-                                       <children>
-                                          <Label text="Seed URLs" />
-                                          <ListView fx:id="urlList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                                          <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
-                                             <children>
-                                                <Button fx:id="addURLButton" mnemonicParsing="false" onAction="#onAddSeedURL" prefHeight="30.0" prefWidth="30.0" text="+" />
-                                                <Button fx:id="removeURLButton" mnemonicParsing="false" onAction="#onRemoveSeedURL" prefHeight="30.0" prefWidth="30.0" text="-" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding></VBox>
-                                    <Separator orientation="VERTICAL" prefHeight="200.0" />
-                                    <VBox alignment="TOP_CENTER" prefWidth="150.0" spacing="5.0">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                       <children>
-                                          <Label text="Tags" />
-                                          <ListView fx:id="tagList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                                          <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
-                                             <children>
-                                                <Button fx:id="addTagButton" mnemonicParsing="false" onAction="#onAddTag" prefHeight="30.0" prefWidth="30.0" text="+" />
-                                                <Button fx:id="removeTagButton" mnemonicParsing="false" onAction="#onRemoveTag" prefHeight="30.0" prefWidth="30.0" text="-" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                    <Separator orientation="VERTICAL" prefHeight="200.0" />
-                                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                       <children>
-                                          <HBox alignment="CENTER" prefWidth="200.0">
-                                             <children>
-                                                <Label text="Settings" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="15.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="150.0" text="Number of crowlers:" />
-                                                <ChoiceBox fx:id="numberOfCrowlersCB" prefWidth="150.0" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </Separator>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label prefWidth="150.0" text="Crawling depth:" />
-                                                <ChoiceBox fx:id="crawlingDepthCB" prefWidth="150.0" HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <padding>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </padding>
-                                          </Separator>
-                                          <Label text="Storage folder:" />
-                                          <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="10.0">
-                                             <children>
-                                                <TextField fx:id="storageFolderTF" editable="false" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="storageFolderButton" mnemonicParsing="false" onAction="#onStorageFolderButton" text="..." />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <padding>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </padding>
-                                          </Separator>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label text="Saved files name prefix:" />
-                                                <TextField fx:id="imageNamePrefixTF" HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <padding>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </padding>
-                                          </Separator>
-                                          <Label text="Filtering by tags:" />
-                                          <CheckBox fx:id="tagsCheckBox" mnemonicParsing="false" text="(When selected it may result in significant reduction in the search results)">
-                                             <padding>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </padding>
-                                          </CheckBox>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER" prefWidth="200.0" spacing="20.0">
-                                 <children>
-                                    <Button fx:id="runButton" mnemonicParsing="false" onAction="#onCrawlerRun" prefHeight="30.0" prefWidth="150.0" text="Run" />
-                                    <ProgressIndicator fx:id="progressIndicator" visible="false" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                                 </padding>
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children></AnchorPane>
+                        <fx:include fx:id="crawlerTab" source="crawler/CrawlerTab.fxml" />
                     </content>
                 </Tab>
                 <Tab text="Instagram">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0">
-                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <VBox alignment="TOP_CENTER" prefWidth="150.0" spacing="5.0">
-                                       <children>
-                                          <Label text="Tags" />
-                                          <ListView fx:id="instaTagList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                                          <HBox alignment="CENTER" spacing="10.0">
-                                             <children>
-                                                <Button fx:id="addInstaTag" mnemonicParsing="false" onAction="#onAddInstaTag" prefHeight="30.0" prefWidth="30.0" text="+" />
-                                                <Button fx:id="removeInstaTag" mnemonicParsing="false" onAction="#onRemoveInstaTag" prefHeight="30.0" prefWidth="30.0" text="-" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets left="5.0" />
-                                             </VBox.margin>
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                       <HBox.margin>
-                                          <Insets left="5.0" />
-                                       </HBox.margin>
-                                    </VBox>
-                                    <Separator orientation="VERTICAL" prefHeight="200.0">
-                                       <HBox.margin>
-                                          <Insets left="10.0" right="10.0" />
-                                       </HBox.margin>
-                                    </Separator>
-                                    <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label text="Instagram token:" />
-                                                <TextField fx:id="instaToken" promptText="Paste instagram token here..." HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </Separator>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label text="Storage folder:" />
-                                                <TextField fx:id="instaStorageFolderTF" editable="false" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="instaStorageFolderButton" mnemonicParsing="false" onAction="#onInstaStorageFolder" text="..." />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </Separator>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <Label text="Saved images name prefix:" />
-                                                <TextField fx:id="instaNamePrefix" HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                          <Separator prefWidth="200.0">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" top="5.0" />
-                                             </VBox.margin>
-                                          </Separator>
-                                          <HBox spacing="10.0">
-                                             <children>
-                                                <Label text="Max number of fetched images:" />
-                                                <TextField fx:id="instaNumberOfFetchedImages" HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="15.0" top="5.0" />
-                                       </padding>
-                                    </VBox>
-                                 </children></HBox>
-                              <HBox alignment="CENTER" prefWidth="200.0">
-                                 <children>
-                                    <Button fx:id="instaRunButton" mnemonicParsing="false" onAction="#onInstaRun" prefHeight="30.0" prefWidth="150.0" text="Run" />
-                                    <ProgressIndicator fx:id="instaProgressIndicator" visible="false" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children></AnchorPane>
+                        <fx:include fx:id="instaTab" source="instagram/InstagramTab.fxml" />
                     </content>
                 </Tab>
             </tabs>
