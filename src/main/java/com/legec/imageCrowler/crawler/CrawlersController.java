@@ -1,4 +1,4 @@
-package com.legec.imageCrowler;
+package com.legec.imageCrowler.crawler;
 
 import com.legec.imageCrowler.utils.Callback;
 import com.legec.imageCrowler.utils.GlobalConfig;
@@ -20,12 +20,12 @@ public class CrawlersController {
 
     public boolean init() {
         CrawlConfig crawlConfig = new CrawlConfig();
-        crawlConfig.setCrawlStorageFolder(GlobalConfig.getStorageFolder());
+        crawlConfig.setCrawlStorageFolder(GlobalConfig.getInstance().getStorageFolder());
         crawlConfig.setIncludeBinaryContentInCrawling(true);
-        if (GlobalConfig.getCrawlDepth() > 0) {
-            crawlConfig.setMaxDepthOfCrawling(GlobalConfig.getCrawlDepth());
+        if (GlobalConfig.getInstance().getCrawlDepth() > 0) {
+            crawlConfig.setMaxDepthOfCrawling(GlobalConfig.getInstance().getCrawlDepth());
         }
-        logger.debug("Storage folder set to: " + GlobalConfig.getStorageFolder());
+        logger.debug("Storage folder set to: " + GlobalConfig.getInstance().getStorageFolder());
         PageFetcher pageFetcher = new PageFetcher(crawlConfig);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
@@ -33,7 +33,7 @@ public class CrawlersController {
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
             logger.debug("Seed URLs set to:");
-            GlobalConfig.getSeedURLs().forEach(url -> {
+            GlobalConfig.getInstance().getSeedURLs().forEach(url -> {
                 crawlController.addSeed(url);
                 logger.debug(url);
             });
@@ -47,18 +47,20 @@ public class CrawlersController {
 
     public boolean start() {
         if (ready) {
-            logger.debug("Crawling started. Number of threads: " + GlobalConfig.getNumberOfThreads());
-            ImageCrawler.configure(GlobalConfig.getSeedURLs(), GlobalConfig.getStorageFolder(), GlobalConfig.getImageFilePrefix(), GlobalConfig.getTags());
-            crawlController.startNonBlocking(ImageCrawler.class, GlobalConfig.getNumberOfThreads());
+            GlobalConfig config = GlobalConfig.getInstance();
+            logger.debug("Crawling started. Number of threads: " + config.getNumberOfThreads());
+            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
+            crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
             return true;
         }
         return false;
     }
 
     public void startWithCallback(Callback callback){
-        logger.debug("Crawling started. Number of threads: " + GlobalConfig.getNumberOfThreads());
-        ImageCrawler.configure(GlobalConfig.getSeedURLs(), GlobalConfig.getStorageFolder(), GlobalConfig.getImageFilePrefix(), GlobalConfig.getTags());
-        crawlController.startNonBlocking(ImageCrawler.class, GlobalConfig.getNumberOfThreads());
+        GlobalConfig config = GlobalConfig.getInstance();
+        logger.debug("Crawling started. Number of threads: " + config.getNumberOfThreads());
+        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(), config.getTags());
+        crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {
             crawlController.waitUntilFinish();
             callback.execute();

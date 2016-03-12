@@ -1,8 +1,9 @@
 package com.legec.imageCrowler;
 
+import com.legec.imageCrowler.crawler.CrawlersController;
 import com.legec.imageCrowler.instagram.InstagramCrawlController;
-import com.legec.imageCrowler.utils.ConfigurationParser;
 import com.legec.imageCrowler.utils.GlobalConfig;
+import com.legec.imageCrowler.utils.PreferenceService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by Hubert on 02.03.2016.
@@ -40,6 +42,8 @@ public class Main extends Application {
     private ListView<String> urlList;
     @FXML
     private ListView<String> tagList;
+    @FXML
+    private CheckBox tagsCheckBox;
     @FXML
     private Button removeURLButton;
     @FXML
@@ -73,7 +77,6 @@ public class Main extends Application {
     //-----------------------------
     private CrawlersController crawlersController = new CrawlersController();
     private InstagramCrawlController instagramCrawlController = new InstagramCrawlController();
-    private ConfigurationParser configurationParser = new ConfigurationParser();
     private boolean crawlerWorks = false;
     private boolean instaWorks = false;
 
@@ -181,20 +184,7 @@ public class Main extends Application {
     @FXML
     private void onCrawlerRun() {
         if (!crawlerWorks) {
-            GlobalConfig.setTags(tagList.getItems());
-            GlobalConfig.setSeedURLs(urlList.getItems());
-            if (crawlingDepthCB.getValue().equals("INFINITY")) {
-                GlobalConfig.setCrawlDepth(-1);
-            } else {
-                GlobalConfig.setCrawlDepth(Integer.valueOf(crawlingDepthCB.getValue()));
-            }
-            if (imageNamePrefixTF.getText() != null && imageNamePrefixTF.getText().length() > 0) {
-                GlobalConfig.setImageFilePrefix(imageNamePrefixTF.getText());
-            } else {
-                GlobalConfig.setImageFilePrefix(null);
-            }
-            GlobalConfig.setStorageFolder(storageFolderTF.getText());
-            GlobalConfig.setNumberOfThreads(numberOfCrowlersCB.getValue());
+            saveValues();
             crawlersController.init();
             crawlersController.startWithCallback(() -> {
                 Platform.runLater(() -> runButton.setText("Run"));
@@ -224,7 +214,7 @@ public class Main extends Application {
     @FXML
     private void onRemoveInstaTag() {
         instaTagObservableList.remove(instaTagList.getSelectionModel().getSelectedIndex());
-        if(instaTagList.getItems().size() == 0){
+        if (instaTagList.getItems().size() == 0) {
             instaTagListEmpty.setValue(true);
         }
     }
@@ -232,15 +222,7 @@ public class Main extends Application {
     @FXML
     private void onInstaRun() {
         if (!instaWorks) {
-            GlobalConfig.setInstaTags(instaTagObservableList);
-            GlobalConfig.setInstaToken(instaToken.getText());
-            GlobalConfig.setInstaImageFilePrefix(instaNamePrefix.getText());
-            GlobalConfig.setInstaStorageFolder(instaStorageFolderTF.getText());
-            if (instaNumberOfFetchedImages.getText() != null && instaNumberOfFetchedImages.getText().length() > 0) {
-                GlobalConfig.setMaxElementsMatchTag(Integer.valueOf(instaNumberOfFetchedImages.getText()));
-            } else {
-                GlobalConfig.setMaxElementsMatchTag(-1);
-            }
+            saveInstaValues();
             instagramCrawlController.init();
             instagramCrawlController.startWithCallback(() -> {
                 Platform.runLater(() -> instaRunButton.setText("Run"));
@@ -262,6 +244,81 @@ public class Main extends Application {
         File dir = chooser.showDialog(primaryStage.getScene().getWindow());
         if (dir != null) {
             instaStorageFolderTF.setText(dir.getPath());
+        }
+    }
+
+    @FXML
+    private void onLoadConfig(){
+        try {
+            GlobalConfig.setConfigInstance(PreferenceService.loadFromXMLFile(null));
+            GlobalConfig config = GlobalConfig.getInstance();
+            //----
+            tagObservableList.setAll(config.getTags());
+            urlObservableList.setAll(config.getSeedURLs());
+            tagsCheckBox.setSelected(config.areTagsActive());
+            if(config.getCrawlDepth() == -1) {
+                crawlingDepthCB.setValue("INFINITY");
+            } else {
+                crawlingDepthCB.setValue(String.valueOf(config.getCrawlDepth()));
+            }
+            imageNamePrefixTF.setText(config.getImageFilePrefix());
+            storageFolderTF.setText(config.getStorageFolder());
+            numberOfCrowlersCB.setValue(config.getNumberOfThreads());
+            //---
+            instaTagObservableList.setAll(config.getInstaTags());
+            instaToken.setText(config.getInstaToken());
+            instaNamePrefix.setText(config.getInstaImageFilePrefix());
+            instaStorageFolderTF.setText(config.getInstaStorageFolder());
+            if(config.getMaxElementsMatchTag() > 0) {
+                instaNumberOfFetchedImages.setText(String.valueOf(config.getMaxElementsMatchTag()));
+            } else {
+                instaNumberOfFetchedImages.clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onSaveConfig(){
+        saveValues();
+        saveInstaValues();
+        try {
+            PreferenceService.saveToXMLFile(GlobalConfig.getInstance(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveValues(){
+        GlobalConfig config = GlobalConfig.getInstance();
+        config.setTags(tagObservableList.stream().collect(Collectors.toList()));
+        config.setSeedURLs(urlObservableList.stream().collect(Collectors.toList()));
+        config.setTagsActive(tagsCheckBox.isSelected());
+        if (crawlingDepthCB.getValue().equals("INFINITY")) {
+            config.setCrawlDepth(-1);
+        } else {
+            config.setCrawlDepth(Integer.valueOf(crawlingDepthCB.getValue()));
+        }
+        if (imageNamePrefixTF.getText() != null && imageNamePrefixTF.getText().length() > 0) {
+            config.setImageFilePrefix(imageNamePrefixTF.getText());
+        } else {
+            config.setImageFilePrefix(null);
+        }
+        config.setStorageFolder(storageFolderTF.getText());
+        config.setNumberOfThreads(numberOfCrowlersCB.getValue());
+    }
+
+    private void saveInstaValues(){
+        GlobalConfig config = GlobalConfig.getInstance();
+        config.setInstaTags(instaTagObservableList.stream().collect(Collectors.toList()));
+        config.setInstaToken(instaToken.getText());
+        config.setInstaImageFilePrefix(instaNamePrefix.getText());
+        config.setInstaStorageFolder(instaStorageFolderTF.getText());
+        if (instaNumberOfFetchedImages.getText() != null && instaNumberOfFetchedImages.getText().length() > 0) {
+            config.setMaxElementsMatchTag(Integer.valueOf(instaNumberOfFetchedImages.getText()));
+        } else {
+            config.setMaxElementsMatchTag(-1);
         }
     }
 }

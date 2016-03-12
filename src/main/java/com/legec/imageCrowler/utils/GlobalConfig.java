@@ -7,90 +7,139 @@ import java.util.List;
  * Created by hubert.legec on 2016-03-07.
  */
 public class GlobalConfig {
-    private static String storageFolder;
-    private static String instaStorageFolder;
-    private static List<String> seedURLs = new LinkedList<>();
-    private static List<String> tags = new LinkedList<>();
-    private static List<String> instaTags = new LinkedList<>();
-    private static int numberOfThreads;
-    private static String imageFilePrefix;
-    private static String instaImageFilePrefix;
-    private static int crawlDepth;
-    private static int maxNumberOfImages;
-    private static int maxElementsMatchTag;
-    private static String instaToken;
+    private static GlobalConfig config;
 
-    public static String getStorageFolder() {
+    private String storageFolder;
+    private String instaStorageFolder;
+    private List<String> seedURLs = new LinkedList<>();
+    private List<String> tags = new LinkedList<>();
+    private boolean tagsActive = false;
+    private List<String> instaTags = new LinkedList<>();
+    private int numberOfThreads;
+    private String imageFilePrefix;
+    private String instaImageFilePrefix;
+    private int crawlDepth;
+    private int maxNumberOfImages;
+    private int maxElementsMatchTag;
+    private String instaToken;
+
+    public GlobalConfig() {
+
+    }
+
+    public static GlobalConfig getInstance(){
+        if(config == null){
+            config = new GlobalConfig();
+        }
+
+        return config;
+    }
+
+    public static void setConfigInstance(GlobalConfig config){
+        GlobalConfig.config = config;
+    }
+
+    public String getStorageFolder() {
         return storageFolder;
     }
 
-    public static void setStorageFolder(String storageLocation) {
-        storageFolder = storageLocation;
+    public void setStorageFolder(String storageLocation) {
+        this.storageFolder = storageLocation;
     }
 
-    public static List<String> getSeedURLs() {
+    public List<String> getSeedURLs() {
         return seedURLs;
     }
 
-    public static void setSeedURLs(List<String> seedURLList) {
-        seedURLs = seedURLList;
+    public void setSeedURLs(List<String> seedURLList) {
+        this.seedURLs = seedURLList;
     }
 
-    public static int getNumberOfThreads() {
+    public int getNumberOfThreads() {
         return numberOfThreads;
     }
 
-    public static void setNumberOfThreads(int numberOfThr) { numberOfThreads = numberOfThr; }
+    public void setNumberOfThreads(int numberOfThr) {
+        this.numberOfThreads = numberOfThr;
+    }
 
-    public static String getImageFilePrefix() {
+    public String getImageFilePrefix() {
         return imageFilePrefix;
     }
 
-    public static void setImageFilePrefix(String imageFilePref) {
-        imageFilePrefix = imageFilePref;
+    public void setImageFilePrefix(String imageFilePref) {
+        this.imageFilePrefix = imageFilePref;
     }
 
-    public static List<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public static void setTags(List<String> tagList) {
-        tags = tagList;
+    public void setTags(List<String> tagList) {
+        this.tags = tagList;
     }
 
-    public static int getCrawlDepth() {
+    public int getCrawlDepth() {
         return crawlDepth;
     }
 
-    public static void setCrawlDepth(int crawlDepthVal) {
-        crawlDepth = crawlDepthVal;
+    public void setCrawlDepth(int crawlDepthVal) {
+        this.crawlDepth = crawlDepthVal;
     }
 
-    public static int getMaxNumberOfImages() {
+    public int getMaxNumberOfImages() {
         return maxNumberOfImages;
     }
 
-    public static void setMaxNumberOfImages(int maxNumbOfImg) {
-        maxNumberOfImages = maxNumbOfImg;
+    public void setMaxNumberOfImages(int maxNumbOfImg) {
+        this.maxNumberOfImages = maxNumbOfImg;
     }
 
-    public static int getMaxElementsMatchTag() { return maxElementsMatchTag; }
+    public int getMaxElementsMatchTag() {
+        return maxElementsMatchTag;
+    }
 
-    public static void setMaxElementsMatchTag(int maxElementsMatchTag) { GlobalConfig.maxElementsMatchTag = maxElementsMatchTag; }
+    public void setMaxElementsMatchTag(int maxElementsMatchTag) {
+        this.maxElementsMatchTag = maxElementsMatchTag;
+    }
 
-    public static String getInstaToken() { return instaToken; }
+    public String getInstaToken() {
+        return instaToken;
+    }
 
-    public static void setInstaToken(String instaToken) { GlobalConfig.instaToken = instaToken; }
+    public void setInstaToken(String instaToken) {
+        this.instaToken = instaToken;
+    }
 
-    public static String getInstaStorageFolder() { return instaStorageFolder; }
+    public String getInstaStorageFolder() {
+        return instaStorageFolder;
+    }
 
-    public static void setInstaStorageFolder(String instaStorageFolder) { GlobalConfig.instaStorageFolder = instaStorageFolder; }
+    public void setInstaStorageFolder(String instaStorageFolder) {
+        this.instaStorageFolder = instaStorageFolder;
+    }
 
-    public static String getInstaImageFilePrefix() { return instaImageFilePrefix; }
+    public String getInstaImageFilePrefix() {
+        return instaImageFilePrefix;
+    }
 
-    public static void setInstaImageFilePrefix(String instaImageFilePrefix) { GlobalConfig.instaImageFilePrefix = instaImageFilePrefix; }
+    public void setInstaImageFilePrefix(String instaImageFilePrefix) {
+        this.instaImageFilePrefix = instaImageFilePrefix;
+    }
 
-    public static List<String> getInstaTags() { return instaTags; }
+    public List<String> getInstaTags() {
+        return instaTags;
+    }
 
-    public static void setInstaTags(List<String> instaTags) { GlobalConfig.instaTags = instaTags; }
+    public void setInstaTags(List<String> instaTags) {
+        this.instaTags = instaTags;
+    }
+
+    public boolean areTagsActive() {
+        return tagsActive;
+    }
+
+    public void setTagsActive(boolean tagsActive) {
+        this.tagsActive = tagsActive;
+    }
 }

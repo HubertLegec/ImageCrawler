@@ -1,6 +1,6 @@
 package com.legec.imageCrowler.instagram;
 
-import com.legec.imageCrowler.RestClient;
+import com.legec.imageCrowler.utils.RestClient;
 import com.legec.imageCrowler.instagram.dto.MediaCollection;
 import com.legec.imageCrowler.instagram.dto.SimilarTags;
 import com.legec.imageCrowler.instagram.dto.Tag;

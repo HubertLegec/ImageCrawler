@@ -1,4 +1,4 @@
-package com.legec.imageCrowler;
+package com.legec.imageCrowler.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,4 +1,4 @@
-package com.legec.imageCrowler;
+package com.legec.imageCrowler.crawler;
 
 import com.google.common.io.Files;
 import edu.uci.ics.crawler4j.crawler.Page;

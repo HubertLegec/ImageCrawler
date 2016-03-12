@@ -35,15 +35,15 @@ public class InstagramCrawlController {
     }
 
     public boolean init() {
-        instagramApi = new InstagramApi(GlobalConfig.getInstaToken());
+        instagramApi = new InstagramApi(GlobalConfig.getInstance().getInstaToken());
         ready = true;
         return true;
     }
 
     public boolean start() {
         if (ready) {
-            GlobalConfig.getInstaTags().forEach(tag -> {
-                List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getMaxElementsMatchTag());
+            GlobalConfig.getInstance().getInstaTags().forEach(tag -> {
+                List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getInstance().getMaxElementsMatchTag());
                 urls.addAll(result);
             });
 
@@ -56,9 +56,9 @@ public class InstagramCrawlController {
     public void startWithCallback(Callback callback) {
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
-                Files.createDirectories(Paths.get(GlobalConfig.getInstaStorageFolder()));
-                GlobalConfig.getInstaTags().forEach(tag -> {
-                    List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getMaxElementsMatchTag());
+                Files.createDirectories(Paths.get(GlobalConfig.getInstance().getInstaStorageFolder()));
+                GlobalConfig.getInstance().getInstaTags().forEach(tag -> {
+                    List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getInstance().getMaxElementsMatchTag());
                     urls.addAll(result);
                 });
                 for (String u : urls) {
@@ -66,7 +66,7 @@ public class InstagramCrawlController {
                     BufferedImage img = ImageIO.read(url);
                     String name = url.getPath();
                     name = name.substring(name.lastIndexOf("/"));
-                    File output = new File(GlobalConfig.getInstaStorageFolder(), name);
+                    File output = new File(GlobalConfig.getInstance().getInstaStorageFolder(), name);
                     ImageIO.write(img, "jpg", output);
                 }
             }catch (IOException e){
@@ -89,7 +89,7 @@ public class InstagramCrawlController {
     private boolean saveImagesFromUrls() {
         logger.debug("Saving instagram images start");
         try {
-            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getStorageFolder() + "\\instagram");
+            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getStorageFolder() + "\\instagram");
         } catch (Exception e) {
             e.printStackTrace();
             logger.debug("Saving instagram images finish. Error!!!");

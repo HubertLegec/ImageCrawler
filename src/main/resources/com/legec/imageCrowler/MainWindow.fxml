@@ -11,12 +11,9 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem mnemonicParsing="false" onAction="#onLoadConfig" text="Load configurration" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveConfig" text="Save configuration" />
+                        <MenuItem mnemonicParsing="false" text="Exit" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -143,6 +140,17 @@
                                                 <Insets bottom="5.0" top="5.0" />
                                              </VBox.margin>
                                           </HBox>
+                                          <Separator prefWidth="200.0">
+                                             <padding>
+                                                <Insets bottom="10.0" top="10.0" />
+                                             </padding>
+                                          </Separator>
+                                          <Label text="Filtering by tags:" />
+                                          <CheckBox fx:id="tagsCheckBox" mnemonicParsing="false" text="(When selected it may result in significant reduction in the search results)">
+                                             <padding>
+                                                <Insets bottom="5.0" top="5.0" />
+                                             </padding>
+                                          </CheckBox>
                                        </children>
                                     </VBox>
                                  </children>
