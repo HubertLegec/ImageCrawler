@@ -141,7 +141,7 @@ public class CrawlerTabController {
 
 
     public void saveValues() {
-        GlobalConfig config = GlobalConfig.getInstance();
+        CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
         config.setTags(tagObservableList.stream().collect(Collectors.toList()));
         config.setSeedURLs(urlObservableList.stream().collect(Collectors.toList()));
         config.setTagsActive(tagsCheckBox.isSelected());
@@ -151,9 +151,9 @@ public class CrawlerTabController {
             config.setCrawlDepth(Integer.valueOf(crawlingDepthCB.getValue()));
         }
         if (imageNamePrefixTF.getText() != null && imageNamePrefixTF.getText().length() > 0) {
-            config.setImageFilePrefix(imageNamePrefixTF.getText());
+            config.setFileNamePrefix(imageNamePrefixTF.getText());
         } else {
-            config.setImageFilePrefix(null);
+            config.setFileNamePrefix(null);
         }
         if (maxNumberOfImages.getText() != null && maxNumberOfImages.getText().length() > 0) {
             config.setMaxNumberOfImages(Integer.parseInt(maxNumberOfImages.getText()));
@@ -165,13 +165,13 @@ public class CrawlerTabController {
     }
 
     public void loadValues() {
-        GlobalConfig config = GlobalConfig.getInstance();
+        CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
         tagObservableList.setAll(config.getTags());
         urlObservableList.setAll(config.getSeedURLs());
         if (urlObservableList.size() > 0) {
             urlListEmpty.setValue(false);
         }
-        tagsCheckBox.setSelected(config.areTagsActive());
+        tagsCheckBox.setSelected(config.isTagsActive());
         if (config.getCrawlDepth() == -1) {
             crawlingDepthCB.setValue("INFINITY");
         } else {
@@ -182,7 +182,7 @@ public class CrawlerTabController {
         } else {
             maxNumberOfImages.clear();
         }
-        imageNamePrefixTF.setText(config.getImageFilePrefix());
+        imageNamePrefixTF.setText(config.getFileNamePrefix());
         storageFolderTF.setText(config.getStorageFolder());
         numberOfCrowlersCB.setValue(config.getNumberOfThreads());
     }

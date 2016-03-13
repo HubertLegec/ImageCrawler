@@ -18,11 +18,12 @@ public class CrawlersController implements BaseCrawlController {
 
     @Override
     public void init() {
+        CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
         CrawlConfig crawlConfig = new CrawlConfig();
-        crawlConfig.setCrawlStorageFolder(GlobalConfig.getInstance().getStorageFolder());
+        crawlConfig.setCrawlStorageFolder(config.getStorageFolder());
         crawlConfig.setIncludeBinaryContentInCrawling(true);
-        if (GlobalConfig.getInstance().getCrawlDepth() > 0) {
-            crawlConfig.setMaxDepthOfCrawling(GlobalConfig.getInstance().getCrawlDepth());
+        if (config.getCrawlDepth() > 0) {
+            crawlConfig.setMaxDepthOfCrawling(config.getCrawlDepth());
         }
         PageFetcher pageFetcher = new PageFetcher(crawlConfig);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -30,7 +31,7 @@ public class CrawlersController implements BaseCrawlController {
 
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
-            GlobalConfig.getInstance().getSeedURLs().forEach(url -> crawlController.addSeed(url));
+            config.getSeedURLs().forEach(url -> crawlController.addSeed(url));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,9 +41,9 @@ public class CrawlersController implements BaseCrawlController {
     @Override
     public boolean start() {
         if (ready) {
-            GlobalConfig config = GlobalConfig.getInstance();
-            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(),
-                    config.getMaxNumberOfImages(), config.getTags(), config.areTagsActive(), () -> crawlController.shutdown());
+            CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
+            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
+                    config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
             crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
             return true;
         }
@@ -51,9 +52,9 @@ public class CrawlersController implements BaseCrawlController {
 
     @Override
     public void startWithCallback(Callback callback) {
-        GlobalConfig config = GlobalConfig.getInstance();
-        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(),
-                config.getMaxNumberOfImages(), config.getTags(), config.areTagsActive(), () -> crawlController.shutdown());
+        CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
+        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
+                config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
         crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {
             crawlController.waitUntilFinish();

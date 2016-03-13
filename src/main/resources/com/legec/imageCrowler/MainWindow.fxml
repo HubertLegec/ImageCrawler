@@ -38,6 +38,11 @@
                         <fx:include fx:id="instaTab" source="instagram/InstagramTab.fxml" />
                     </content>
                 </Tab>
+                <Tab text="Flickr">
+                    <content>
+                        <fx:include fx:id="flickrTab" source="flickr/FlickrTab.fxml" />
+                    </content>
+                </Tab>
             </tabs>
         </TabPane>
     </center>

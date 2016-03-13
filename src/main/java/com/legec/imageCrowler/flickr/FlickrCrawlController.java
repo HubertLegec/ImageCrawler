@@ -26,19 +26,19 @@ public class FlickrCrawlController implements BaseCrawlController{
 
     @Override
     public void init() {
-        flickrApi = new FlickrApi(GlobalConfig.getInstance().getFlickrToken());
+        flickrApi = new FlickrApi(GlobalConfig.getInstance().getFlickrConfig().getToken());
         ready = true;
     }
 
     @Override
     public boolean start() {
         if (ready) {
-            GlobalConfig config = GlobalConfig.getInstance();
+            FlickrConfig config = GlobalConfig.getInstance().getFlickrConfig();
                 List<String> result;
-            if(config.isFlickrByTag()) {
-                result = flickrApi.getListOfUrlsByTags(config.getFlickrTags(), config.getFlicrMaxNumberOfImages());
+            if(config.isByTag()) {
+                result = flickrApi.getListOfUrlsByTags(config.getTags(), config.getMaxNumberOfImages());
             } else {
-                result = flickrApi.getListOfUrlsByText(config.getFlickrText(), config.getFlicrMaxNumberOfImages());
+                result = flickrApi.getListOfUrlsByText(config.getText(), config.getMaxNumberOfImages());
             }
             urls.addAll(result);
             saveImagesFromUrls();
@@ -51,12 +51,12 @@ public class FlickrCrawlController implements BaseCrawlController{
     public void startWithCallback(Callback callback) {
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
-                GlobalConfig config = GlobalConfig.getInstance();
+                FlickrConfig config = GlobalConfig.getInstance().getFlickrConfig();
                 List<String> result;
-                if (config.isFlickrByTag()) {
-                    result = flickrApi.getListOfUrlsByTags(config.getFlickrTags(), config.getFlicrMaxNumberOfImages());
+                if (config.isByTag()) {
+                    result = flickrApi.getListOfUrlsByTags(config.getTags(), config.getMaxNumberOfImages());
                 } else {
-                    result = flickrApi.getListOfUrlsByText(config.getFlickrText(), config.getFlicrMaxNumberOfImages());
+                    result = flickrApi.getListOfUrlsByText(config.getText(), config.getMaxNumberOfImages());
                 }
                 urls.addAll(result);
 
@@ -65,7 +65,7 @@ public class FlickrCrawlController implements BaseCrawlController{
                     BufferedImage img = ImageIO.read(url);
                     String name = url.getPath();
                     name = name.substring(name.lastIndexOf("/"));
-                    File output = new File(GlobalConfig.getInstance().getInstaStorageFolder(), name);
+                    File output = new File(config.getStorageFolder(), name);
                     ImageIO.write(img, "jpg", output);
                 }
             } catch (IOException e){
@@ -86,7 +86,7 @@ public class FlickrCrawlController implements BaseCrawlController{
 
     private boolean saveImagesFromUrls(){
         try {
-            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getInstaStorageFolder());
+            ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getFlickrConfig().getStorageFolder());
         } catch (Exception e) {
             e.printStackTrace();
             return false;

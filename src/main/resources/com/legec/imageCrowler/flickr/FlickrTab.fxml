@@ -1,0 +1,7 @@
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<AnchorPane minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/null"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.legec.imageCrowler.flickr.FlickrTabController">
+
+</AnchorPane>

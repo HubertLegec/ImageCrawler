@@ -95,29 +95,29 @@ public class InstaTabController {
     }
 
     public void saveValues() {
-        GlobalConfig config = GlobalConfig.getInstance();
-        config.setInstaTags(instaTagObservableList.stream().collect(Collectors.toList()));
-        config.setInstaToken(instaToken.getText());
-        config.setInstaImageFilePrefix(instaNamePrefix.getText());
-        config.setInstaStorageFolder(instaStorageFolderTF.getText());
+        InstagramConfig config = GlobalConfig.getInstance().getInstagramConfig();
+        config.setTags(instaTagObservableList.stream().collect(Collectors.toList()));
+        config.setToken(instaToken.getText());
+        config.setFileNamePrefix(instaNamePrefix.getText());
+        config.setStorageFolder(instaStorageFolderTF.getText());
         if (instaNumberOfFetchedImages.getText() != null && instaNumberOfFetchedImages.getText().length() > 0) {
-            config.setMaxElementsMatchTag(Integer.valueOf(instaNumberOfFetchedImages.getText()));
+            config.setMaxNumberOfImages(Integer.valueOf(instaNumberOfFetchedImages.getText()));
         } else {
-            config.setMaxElementsMatchTag(-1);
+            config.setMaxNumberOfImages(-1);
         }
     }
 
     public void loadValues() {
-        GlobalConfig config = GlobalConfig.getInstance();
-        instaTagObservableList.setAll(config.getInstaTags());
+        InstagramConfig config = GlobalConfig.getInstance().getInstagramConfig();
+        instaTagObservableList.setAll(config.getTags());
         if (instaTagObservableList.size() > 0) {
             instaTagListEmpty.setValue(false);
         }
-        instaToken.setText(config.getInstaToken());
-        instaNamePrefix.setText(config.getInstaImageFilePrefix());
-        instaStorageFolderTF.setText(config.getInstaStorageFolder());
-        if (config.getMaxElementsMatchTag() > 0) {
-            instaNumberOfFetchedImages.setText(String.valueOf(config.getMaxElementsMatchTag()));
+        instaToken.setText(config.getToken());
+        instaNamePrefix.setText(config.getFileNamePrefix());
+        instaStorageFolderTF.setText(config.getStorageFolder());
+        if (config.getMaxNumberOfImages() > 0) {
+            instaNumberOfFetchedImages.setText(String.valueOf(config.getMaxNumberOfImages()));
         } else {
             instaNumberOfFetchedImages.clear();
         }
