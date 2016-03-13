@@ -4,24 +4,24 @@
 <AnchorPane minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/null"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.legec.imageCrowler.instagram.InstaTabController">
     <children>
-        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+        <VBox AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
               AnchorPane.topAnchor="0.0">
             <children>
-                <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                <HBox VBox.vgrow="ALWAYS">
                     <children>
-                        <VBox alignment="TOP_CENTER" prefWidth="150.0" spacing="5.0">
+                        <VBox alignment="TOP_CENTER" spacing="5.0">
                             <children>
                                 <Label text="Tags"/>
-                                <ListView fx:id="instaTagList" prefHeight="200.0"
+                                <ListView fx:id="tagList"
                                           prefWidth="200.0" VBox.vgrow="ALWAYS"/>
                                 <HBox alignment="CENTER" spacing="10.0">
                                     <children>
-                                        <Button fx:id="addInstaTag" mnemonicParsing="false"
-                                                onAction="#onAddInstaTag" prefHeight="30.0"
+                                        <Button fx:id="addTag" mnemonicParsing="false"
+                                                onAction="#onAddTag" prefHeight="30.0"
                                                 prefWidth="30.0" text="+"/>
-                                        <Button fx:id="removeInstaTag" mnemonicParsing="false"
-                                                onAction="#onRemoveInstaTag" prefHeight="30.0"
+                                        <Button fx:id="removeTag" mnemonicParsing="false"
+                                                onAction="#onRemoveTag" prefHeight="30.0"
                                                 prefWidth="30.0" text="-"/>
                                     </children>
                                     <VBox.margin>
@@ -39,17 +39,17 @@
                                 <Insets left="5.0"/>
                             </HBox.margin>
                         </VBox>
-                        <Separator orientation="VERTICAL" prefHeight="200.0">
+                        <Separator orientation="VERTICAL" >
                             <HBox.margin>
                                 <Insets left="10.0" right="10.0"/>
                             </HBox.margin>
                         </Separator>
-                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                        <VBox HBox.hgrow="ALWAYS">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
                                         <Label text="Instagram token:"/>
-                                        <TextField fx:id="instaToken"
+                                        <TextField fx:id="tokenTF"
                                                    promptText="Paste instagram token here..."
                                                    HBox.hgrow="ALWAYS"/>
                                     </children>
@@ -57,7 +57,7 @@
                                         <Insets bottom="10.0" top="10.0"/>
                                     </VBox.margin>
                                 </HBox>
-                                <Separator prefWidth="200.0">
+                                <Separator>
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0"/>
                                     </VBox.margin>
@@ -65,17 +65,17 @@
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
                                         <Label text="Storage folder:"/>
-                                        <TextField fx:id="instaStorageFolderTF" editable="false"
+                                        <TextField fx:id="storageFolderTF" editable="false"
                                                    HBox.hgrow="ALWAYS"/>
                                         <Button fx:id="instaStorageFolderButton"
                                                 mnemonicParsing="false"
-                                                onAction="#onInstaStorageFolder" text="..."/>
+                                                onAction="#onStorageFolder" text="..."/>
                                     </children>
                                     <VBox.margin>
                                         <Insets bottom="10.0" top="10.0"/>
                                     </VBox.margin>
                                 </HBox>
-                                <Separator prefWidth="200.0">
+                                <Separator>
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0"/>
                                     </VBox.margin>
@@ -83,13 +83,13 @@
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
                                         <Label text="Saved images name prefix:"/>
-                                        <TextField fx:id="instaNamePrefix" HBox.hgrow="ALWAYS"/>
+                                        <TextField fx:id="fileNamePrefixTF" HBox.hgrow="ALWAYS"/>
                                     </children>
                                     <VBox.margin>
                                         <Insets bottom="10.0" top="10.0"/>
                                     </VBox.margin>
                                 </HBox>
-                                <Separator prefWidth="200.0">
+                                <Separator>
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0"/>
                                     </VBox.margin>
@@ -97,7 +97,7 @@
                                 <HBox spacing="10.0">
                                     <children>
                                         <Label text="Max number of fetched images:"/>
-                                        <TextField fx:id="instaNumberOfFetchedImages"
+                                        <TextField fx:id="maxNumberOfImagesTF"
                                                    HBox.hgrow="ALWAYS"/>
                                     </children>
                                     <VBox.margin>
@@ -111,12 +111,12 @@
                         </VBox>
                     </children>
                 </HBox>
-                <HBox alignment="CENTER" prefWidth="200.0">
+                <HBox alignment="CENTER">
                     <children>
-                        <Button fx:id="instaRunButton" mnemonicParsing="false"
+                        <Button fx:id="runButton" mnemonicParsing="false"
                                 onAction="#onInstaRun" prefHeight="30.0" prefWidth="150.0"
                                 text="Run"/>
-                        <ProgressIndicator fx:id="instaProgressIndicator" visible="false"/>
+                        <ProgressIndicator fx:id="progressIndicator" visible="false"/>
                     </children>
                 </HBox>
             </children>
