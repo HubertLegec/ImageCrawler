@@ -18,7 +18,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,11 +73,14 @@ public class Main extends Application {
     private void onLoadConfig(){
         try {
             GlobalConfig.setConfigInstance(PreferenceService.loadFromXMLFile(null));
-            //----
             crawlerTabController.loadValues();
             instaTabController.loadValues();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Can't load configuration from file");
+            alert.setContentText("File doesn't exist or has incorrect structure.");
+            alert.showAndWait();
         }
     }
 
@@ -87,7 +92,10 @@ public class Main extends Application {
         try {
             PreferenceService.saveToXMLFile(GlobalConfig.getInstance(), null);
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Error during saving configuration. Try again.");
+            alert.showAndWait();
         }
     }
 }

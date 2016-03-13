@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Hubert on 02.03.2016.
  */
-public class ImageCrawler extends WebCrawler{
+public class ImageCrawler extends WebCrawler {
 
     private static final Pattern filters = Pattern
             .compile(".*(\\.(css|js|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf|rm|smil|wmv|swf|wma|zip|rar|gz))$");
@@ -38,9 +38,9 @@ public class ImageCrawler extends WebCrawler{
         tagsActive = areTagsActive;
         maxNumberOfImages = maxNumOfImg;
         stopCallback = callback;
-        domain.forEach( el -> {
+        domain.forEach(el -> {
             crawlDomains.add(el);
-            if(el.contains("www.")){
+            if (el.contains("www.")) {
                 crawlDomains.add(el.replace("www.", ""));
             }
         });
@@ -54,8 +54,8 @@ public class ImageCrawler extends WebCrawler{
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
-        if(maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages){
-            if(!callbackSent){
+        if (maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages) {
+            if (!callbackSent) {
                 callbackSent = true;
                 stopCallback.execute();
             }
@@ -81,8 +81,8 @@ public class ImageCrawler extends WebCrawler{
 
     @Override
     public void visit(Page page) {
-        if(maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages){
-            if(!callbackSent){
+        if (maxNumberOfImages > 0 && nameCounter >= maxNumberOfImages) {
+            if (!callbackSent) {
                 callbackSent = true;
                 stopCallback.execute();
             }
@@ -109,8 +109,8 @@ public class ImageCrawler extends WebCrawler{
         }
     }
 
-    private static String getFileName(String extension){
-        if(imageNamePrefix != null){
+    private static String getFileName(String extension) {
+        if (imageNamePrefix != null) {
             return imageNamePrefix + (nameCounter++) + extension;
         }
 
@@ -118,7 +118,7 @@ public class ImageCrawler extends WebCrawler{
         return UUID.randomUUID() + extension;
     }
 
-    public static int getNameCounter(){
+    public static int getNameCounter() {
         return nameCounter;
     }
 }

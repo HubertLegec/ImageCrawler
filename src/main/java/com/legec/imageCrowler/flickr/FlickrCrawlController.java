@@ -1,54 +1,46 @@
-package com.legec.imageCrowler.instagram;
+package com.legec.imageCrowler.flickr;
 
 import com.legec.imageCrowler.BaseCrawlController;
 import com.legec.imageCrowler.utils.Callback;
-import com.legec.imageCrowler.utils.DownloadImageFromURLTask;
-import com.legec.imageCrowler.utils.GlobalConfig;
 import com.legec.imageCrowler.utils.ConcurentExecutionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.legec.imageCrowler.utils.GlobalConfig;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by Hubert on 02.03.2016.
+ * Created by hubert.legec on 2016-03-13.
  */
-public class InstagramCrawlController implements BaseCrawlController {
+public class FlickrCrawlController implements BaseCrawlController{
     private boolean ready = false;
     private Set<String> urls;
     private CompletableFuture completableFuture;
 
-    private InstagramApi instagramApi;
-
-    public InstagramCrawlController() {
-        urls = new HashSet<>();
-    }
-
+    private FlickrApi flickrApi;
 
     @Override
     public void init() {
-        instagramApi = new InstagramApi(GlobalConfig.getInstance().getInstaToken());
+        flickrApi = new FlickrApi(GlobalConfig.getInstance().getFlickrToken());
         ready = true;
     }
 
     @Override
     public boolean start() {
         if (ready) {
-            GlobalConfig.getInstance().getInstaTags().forEach(tag -> {
-                List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getInstance().getMaxElementsMatchTag());
-                urls.addAll(result);
-            });
-
+            GlobalConfig config = GlobalConfig.getInstance();
+                List<String> result;
+            if(config.isFlickrByTag()) {
+                result = flickrApi.getListOfUrlsByTags(config.getFlickrTags(), config.getFlicrMaxNumberOfImages());
+            } else {
+                result = flickrApi.getListOfUrlsByText(config.getFlickrText(), config.getFlicrMaxNumberOfImages());
+            }
+            urls.addAll(result);
             saveImagesFromUrls();
             return true;
         }
@@ -59,11 +51,15 @@ public class InstagramCrawlController implements BaseCrawlController {
     public void startWithCallback(Callback callback) {
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
-                Files.createDirectories(Paths.get(GlobalConfig.getInstance().getInstaStorageFolder()));
-                GlobalConfig.getInstance().getInstaTags().forEach(tag -> {
-                    List<String> result = instagramApi.getImageURLs(tag, GlobalConfig.getInstance().getMaxElementsMatchTag());
-                    urls.addAll(result);
-                });
+                GlobalConfig config = GlobalConfig.getInstance();
+                List<String> result;
+                if (config.isFlickrByTag()) {
+                    result = flickrApi.getListOfUrlsByTags(config.getFlickrTags(), config.getFlicrMaxNumberOfImages());
+                } else {
+                    result = flickrApi.getListOfUrlsByText(config.getFlickrText(), config.getFlicrMaxNumberOfImages());
+                }
+                urls.addAll(result);
+
                 for (String u : urls) {
                     URL url = new URL(u);
                     BufferedImage img = ImageIO.read(url);
@@ -72,7 +68,7 @@ public class InstagramCrawlController implements BaseCrawlController {
                     File output = new File(GlobalConfig.getInstance().getInstaStorageFolder(), name);
                     ImageIO.write(img, "jpg", output);
                 }
-            } catch (IOException e) {
+            } catch (IOException e){
                 e.printStackTrace();
             }
         });
@@ -88,8 +84,7 @@ public class InstagramCrawlController implements BaseCrawlController {
         completableFuture.cancel(false);
     }
 
-
-    private boolean saveImagesFromUrls() {
+    private boolean saveImagesFromUrls(){
         try {
             ConcurentExecutionService.saveImagesFromURLS(urls, 4, GlobalConfig.getInstance().getInstaStorageFolder());
         } catch (Exception e) {
@@ -98,5 +93,4 @@ public class InstagramCrawlController implements BaseCrawlController {
         }
         return true;
     }
-
 }

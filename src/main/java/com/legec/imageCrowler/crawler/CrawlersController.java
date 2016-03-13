@@ -1,5 +1,6 @@
 package com.legec.imageCrowler.crawler;
 
+import com.legec.imageCrowler.BaseCrawlController;
 import com.legec.imageCrowler.utils.Callback;
 import com.legec.imageCrowler.utils.GlobalConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -7,17 +8,16 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by Hubert on 02.03.2016.
  */
-public class CrawlersController {
+public class CrawlersController implements BaseCrawlController {
     private CrawlController crawlController;
     private boolean ready = false;
 
-    public boolean init() {
+    @Override
+    public void init() {
         CrawlConfig crawlConfig = new CrawlConfig();
         crawlConfig.setCrawlStorageFolder(GlobalConfig.getInstance().getStorageFolder());
         crawlConfig.setIncludeBinaryContentInCrawling(true);
@@ -30,15 +30,14 @@ public class CrawlersController {
 
         try {
             crawlController = new CrawlController(crawlConfig, pageFetcher, robotstxtServer);
-            GlobalConfig.getInstance().getSeedURLs().forEach(url -> crawlController.addSeed(url) );
+            GlobalConfig.getInstance().getSeedURLs().forEach(url -> crawlController.addSeed(url));
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
         ready = true;
-        return true;
     }
 
+    @Override
     public boolean start() {
         if (ready) {
             GlobalConfig config = GlobalConfig.getInstance();
@@ -50,6 +49,7 @@ public class CrawlersController {
         return false;
     }
 
+    @Override
     public void startWithCallback(Callback callback) {
         GlobalConfig config = GlobalConfig.getInstance();
         ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getImageFilePrefix(),
@@ -62,6 +62,7 @@ public class CrawlersController {
         thread.start();
     }
 
+    @Override
     public void stop() {
         crawlController.shutdown();
     }

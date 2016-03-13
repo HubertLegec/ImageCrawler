@@ -26,7 +26,7 @@ public class InstagramApi {
         this.token = token;
     }
 
-    public List<Tag> getSimilarTags(String tag){
+    public List<Tag> getSimilarTags(String tag) {
         Map<String, String> params = new HashMap<>();
         params.put("access_token", token);
         params.put("q", tag);
@@ -36,17 +36,17 @@ public class InstagramApi {
         return response.data;
     }
 
-    public List<String> getImageURLs(String tag, int howMuch){
+    public List<String> getImageURLs(String tag, int howMuch) {
         List<String> result = new LinkedList<>();
         Map<String, String> params = new HashMap<>();
         params.put("access_token", token);
-        if(howMuch > 0){
+        if (howMuch > 0) {
             params.put("count", Integer.toString(howMuch));
         }
 
         MediaCollection response = (MediaCollection) restClient.executeGetToJSONWithParams("tags/" + tag + "/media/recent", MediaCollection.class, params);
 
-        response.data.stream().filter( el -> el.type.equals("image")).forEach(el -> result.add(el.images.standardResolution.url));
+        response.data.stream().filter(el -> el.type.equals("image")).forEach(el -> result.add(el.images.standardResolution.url));
 
         return result;
     }

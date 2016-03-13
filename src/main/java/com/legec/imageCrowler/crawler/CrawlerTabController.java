@@ -53,7 +53,7 @@ public class CrawlerTabController {
     private boolean crawlerWorks = false;
     private Stage primaryStage;
 
-    public void init(Stage primaryStage){
+    public void init(Stage primaryStage) {
         this.primaryStage = primaryStage;
         urlList.setItems(urlObservableList);
         tagList.setItems(tagObservableList);
@@ -140,7 +140,7 @@ public class CrawlerTabController {
     }
 
 
-    public void saveValues(){
+    public void saveValues() {
         GlobalConfig config = GlobalConfig.getInstance();
         config.setTags(tagObservableList.stream().collect(Collectors.toList()));
         config.setSeedURLs(urlObservableList.stream().collect(Collectors.toList()));
@@ -155,31 +155,31 @@ public class CrawlerTabController {
         } else {
             config.setImageFilePrefix(null);
         }
-        if(maxNumberOfImages.getText() != null && maxNumberOfImages.getText().length() > 0){
+        if (maxNumberOfImages.getText() != null && maxNumberOfImages.getText().length() > 0) {
             config.setMaxNumberOfImages(Integer.parseInt(maxNumberOfImages.getText()));
-        }else{
+        } else {
             config.setMaxNumberOfImages(-1);
         }
         config.setStorageFolder(storageFolderTF.getText());
         config.setNumberOfThreads(numberOfCrowlersCB.getValue());
     }
 
-    public void loadValues(){
+    public void loadValues() {
         GlobalConfig config = GlobalConfig.getInstance();
         tagObservableList.setAll(config.getTags());
         urlObservableList.setAll(config.getSeedURLs());
-        if(urlObservableList.size() > 0){
+        if (urlObservableList.size() > 0) {
             urlListEmpty.setValue(false);
         }
         tagsCheckBox.setSelected(config.areTagsActive());
-        if(config.getCrawlDepth() == -1) {
+        if (config.getCrawlDepth() == -1) {
             crawlingDepthCB.setValue("INFINITY");
         } else {
             crawlingDepthCB.setValue(String.valueOf(config.getCrawlDepth()));
         }
-        if(config.getMaxNumberOfImages() > 0){
+        if (config.getMaxNumberOfImages() > 0) {
             maxNumberOfImages.setText(String.valueOf(config.getMaxNumberOfImages()));
-        } else{
+        } else {
             maxNumberOfImages.clear();
         }
         imageNamePrefixTF.setText(config.getImageFilePrefix());

@@ -25,8 +25,13 @@ public class DownloadImageFromURLTask implements Callable<File> {
         BufferedImage img = ImageIO.read(url);
         String name = url.getPath();
         name = name.substring(name.lastIndexOf("/"));
+        String extension = name.substring(name.lastIndexOf("."));
+        if(extension == null || extension.length() == 0){
+            extension = "jpg";
+        }
+
         File output = new File(path, name);
-        ImageIO.write(img, "jpg", output);
+        ImageIO.write(img, extension, output);
 
         return output;
     }

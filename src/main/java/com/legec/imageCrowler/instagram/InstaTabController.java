@@ -40,7 +40,7 @@ public class InstaTabController {
     private boolean instaWorks = false;
     private Stage primaryStage;
 
-    public void init(Stage primaryStage){
+    public void init(Stage primaryStage) {
         this.primaryStage = primaryStage;
         instaRunButton.disableProperty().bind(instaStorageFolderTF.textProperty().isEmpty().or(instaTagListEmpty).or(instaToken.textProperty().isEmpty()));
         instaTagList.setItems(instaTagObservableList);
@@ -94,7 +94,7 @@ public class InstaTabController {
         }
     }
 
-    public void saveValues(){
+    public void saveValues() {
         GlobalConfig config = GlobalConfig.getInstance();
         config.setInstaTags(instaTagObservableList.stream().collect(Collectors.toList()));
         config.setInstaToken(instaToken.getText());
@@ -107,16 +107,16 @@ public class InstaTabController {
         }
     }
 
-    public void loadValues(){
+    public void loadValues() {
         GlobalConfig config = GlobalConfig.getInstance();
         instaTagObservableList.setAll(config.getInstaTags());
-        if(instaTagObservableList.size() > 0){
+        if (instaTagObservableList.size() > 0) {
             instaTagListEmpty.setValue(false);
         }
         instaToken.setText(config.getInstaToken());
         instaNamePrefix.setText(config.getInstaImageFilePrefix());
         instaStorageFolderTF.setText(config.getInstaStorageFolder());
-        if(config.getMaxElementsMatchTag() > 0) {
+        if (config.getMaxElementsMatchTag() > 0) {
             instaNumberOfFetchedImages.setText(String.valueOf(config.getMaxElementsMatchTag()));
         } else {
             instaNumberOfFetchedImages.clear();

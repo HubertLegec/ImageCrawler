@@ -15,6 +15,10 @@ public class GlobalConfig {
     private List<String> tags = new LinkedList<>();
     private boolean tagsActive = false;
     private List<String> instaTags = new LinkedList<>();
+    private List<String> flickrTags = new LinkedList<>();
+    private String flickrText;
+    private boolean flickrByTag = true;
+    private int flicrMaxNumberOfImages;
     private int numberOfThreads;
     private String imageFilePrefix;
     private String instaImageFilePrefix;
@@ -22,20 +26,20 @@ public class GlobalConfig {
     private int maxNumberOfImages;
     private int maxElementsMatchTag;
     private String instaToken;
+    private String flickrToken;
 
     public GlobalConfig() {
 
     }
 
-    public static GlobalConfig getInstance(){
-        if(config == null){
+    public static GlobalConfig getInstance() {
+        if (config == null) {
             config = new GlobalConfig();
         }
-
         return config;
     }
 
-    public static void setConfigInstance(GlobalConfig config){
+    public static void setConfigInstance(GlobalConfig config) {
         GlobalConfig.config = config;
     }
 
@@ -141,5 +145,45 @@ public class GlobalConfig {
 
     public void setTagsActive(boolean tagsActive) {
         this.tagsActive = tagsActive;
+    }
+
+    public String getFlickrToken() {
+        return flickrToken;
+    }
+
+    public void setFlickrToken(String flickrToken) {
+        this.flickrToken = flickrToken;
+    }
+
+    public List<String> getFlickrTags() {
+        return flickrTags;
+    }
+
+    public void setFlickrTags(List<String> flickrTags) {
+        this.flickrTags = flickrTags;
+    }
+
+    public boolean isFlickrByTag() {
+        return flickrByTag;
+    }
+
+    public void setFlickrByTag(boolean flickrByTag) {
+        this.flickrByTag = flickrByTag;
+    }
+
+    public int getFlicrMaxNumberOfImages() {
+        return flicrMaxNumberOfImages;
+    }
+
+    public void setFlicrMaxNumberOfImages(int flicrMaxNumberOfImages) {
+        this.flicrMaxNumberOfImages = flicrMaxNumberOfImages;
+    }
+
+    public String getFlickrText() {
+        return flickrText;
+    }
+
+    public void setFlickrText(String flickrText) {
+        this.flickrText = flickrText;
     }
 }
