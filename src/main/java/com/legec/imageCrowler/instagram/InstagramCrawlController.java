@@ -1,18 +1,8 @@
 package com.legec.imageCrowler.instagram;
 
 import com.legec.imageCrowler.BaseCrawlController;
-import com.legec.imageCrowler.utils.Callback;
-import com.legec.imageCrowler.utils.DownloadImageFromURLTask;
-import com.legec.imageCrowler.utils.GlobalConfig;
-import com.legec.imageCrowler.utils.ConcurentExecutionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
+import com.legec.imageCrowler.utils.*;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -65,16 +55,14 @@ public class InstagramCrawlController implements BaseCrawlController {
                     List<String> result = instagramApi.getImageURLs(tag, config.getMaxNumberOfImages());
                     urls.addAll(result);
                 });
-                for (String u : urls) {
-                    URL url = new URL(u);
-                    BufferedImage img = ImageIO.read(url);
-                    String name = url.getPath();
-                    name = name.substring(name.lastIndexOf("/"));
-                    File output = new File(config.getStorageFolder(), name);
-                    ImageIO.write(img, "jpg", output);
+                if (config.getFileNamePrefix() != null && config.getFileNamePrefix().length() > 0) {
+                    FileService.saveImageFilesWithCustomName(config.getStorageFolder(), urls, config.getFileNamePrefix());
+                } else {
+                    FileService.saveImageFiles(config.getStorageFolder(), urls);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                completableFuture.completeExceptionally(e);
             }
         });
         completableFuture.thenRun(() -> callback.execute());

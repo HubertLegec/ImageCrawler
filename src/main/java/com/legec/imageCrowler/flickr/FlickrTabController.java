@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.controlsfx.control.ToggleSwitch;
 
 import java.io.File;
 import java.util.Optional;
@@ -26,6 +27,12 @@ public class FlickrTabController {
     private Button runButton;
     @FXML
     private ListView<String> tagList;
+    @FXML
+    private ToggleSwitch searchSwitch;
+    @FXML
+    private TextField searchText;
+    @FXML
+    private Button addTag;
     @FXML
     private Button removeTag;
     @FXML
@@ -47,9 +54,13 @@ public class FlickrTabController {
 
     public void init(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        runButton.disableProperty().bind(storageFolderTF.textProperty().isEmpty().or(tagListEmpty).or(tokenTF.textProperty().isEmpty()));
+        runButton.disableProperty().bind(storageFolderTF.textProperty().isEmpty().or(tokenTF.textProperty().isEmpty())
+                .or(searchSwitch.selectedProperty().and(searchText.textProperty().isEmpty())).or(tagListEmpty.and(searchSwitch.selectedProperty().not())));
         tagList.setItems(tagObservableList);
-        removeTag.disableProperty().bind(tagList.getSelectionModel().selectedItemProperty().isNull());
+        removeTag.disableProperty().bind(tagList.getSelectionModel().selectedItemProperty().isNull().or(searchSwitch.selectedProperty()));
+        addTag.disableProperty().bind(searchSwitch.selectedProperty());
+        tagList.disableProperty().bind(searchSwitch.selectedProperty());
+        searchText.disableProperty().bind(searchSwitch.selectedProperty().not());
     }
 
 
@@ -103,6 +114,7 @@ public class FlickrTabController {
             tagListEmpty.setValue(false);
         }
         tokenTF.setText(config.getToken());
+        searchSwitch.setSelected(!config.isByTag());
         fileNamePrefixTF.setText(config.getFileNamePrefix());
         storageFolderTF.setText(config.getStorageFolder());
         if (config.getMaxNumberOfImages() > 0) {
@@ -116,8 +128,10 @@ public class FlickrTabController {
         FlickrConfig config = GlobalConfig.getInstance().getFlickrConfig();
         config.setTags(tagObservableList.stream().collect(Collectors.toList()));
         config.setToken(tokenTF.getText());
+        config.setText(searchText.getText());
         config.setFileNamePrefix(fileNamePrefixTF.getText());
         config.setStorageFolder(storageFolderTF.getText());
+        config.setByTag(!searchSwitch.isSelected());
         if (maxNumberOfImagesTF.getText() != null && maxNumberOfImagesTF.getText().length() > 0) {
             config.setMaxNumberOfImages(Integer.valueOf(maxNumberOfImagesTF.getText()));
         } else {

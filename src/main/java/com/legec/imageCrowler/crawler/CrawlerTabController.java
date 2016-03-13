@@ -1,5 +1,6 @@
 package com.legec.imageCrowler.crawler;
 
+import com.legec.imageCrowler.utils.DialogService;
 import com.legec.imageCrowler.utils.GlobalConfig;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -79,10 +80,7 @@ public class CrawlerTabController {
 
     @FXML
     private void onAddSeedURL() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Seed URL");
-        dialog.setHeaderText("Add seed URL:");
-        Optional<String> value = dialog.showAndWait();
+        Optional<String> value = DialogService.showAddURLDialog(primaryStage.getScene().getWindow());
         value.ifPresent(v -> {
             urlObservableList.add(v);
             urlListEmpty.setValue(false);
@@ -99,10 +97,7 @@ public class CrawlerTabController {
 
     @FXML
     private void onAddTag() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("New tag");
-        dialog.setHeaderText("Add new tag:");
-        Optional<String> value = dialog.showAndWait();
+        Optional<String> value = DialogService.showAddTagDialog(primaryStage.getScene().getWindow());
         value.ifPresent(v -> tagObservableList.add(v));
     }
 
@@ -113,9 +108,7 @@ public class CrawlerTabController {
 
     @FXML
     private void onStorageFolderButton() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Storage folder");
-        File dir = chooser.showDialog(primaryStage.getScene().getWindow());
+        File dir = DialogService.showStorageDirectoryDialog(primaryStage.getScene().getWindow());
         if (dir != null) {
             storageFolderTF.setText(dir.getPath());
         }

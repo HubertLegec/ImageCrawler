@@ -16,6 +16,7 @@ public class GlobalConfig {
 
 
     public GlobalConfig() {
+        this.crawlerConfig = new CrawlerConfig();
         this.flickrConfig = new FlickrConfig();
         this.instagramConfig = new InstagramConfig();
     }

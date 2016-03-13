@@ -2,6 +2,7 @@ package com.legec.imageCrowler;
 
 import com.legec.imageCrowler.crawler.CrawlerTabController;
 import com.legec.imageCrowler.crawler.CrawlersController;
+import com.legec.imageCrowler.flickr.FlickrTabController;
 import com.legec.imageCrowler.instagram.InstaTabController;
 import com.legec.imageCrowler.instagram.InstagramCrawlController;
 import com.legec.imageCrowler.utils.GlobalConfig;
@@ -37,6 +38,8 @@ public class Main extends Application {
     private InstaTabController instaTabController;
     @FXML
     private CrawlerTabController crawlerTabController;
+    @FXML
+    private FlickrTabController flickrTabController;
 
 
     public static void main(String[] args) {
@@ -64,6 +67,7 @@ public class Main extends Application {
             primaryStage.show();
             instaTabController.init(primaryStage);
             crawlerTabController.init(primaryStage);
+            flickrTabController.init(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,6 +79,7 @@ public class Main extends Application {
             GlobalConfig.setConfigInstance(PreferenceService.loadFromXMLFile(null));
             crawlerTabController.loadValues();
             instaTabController.loadValues();
+            flickrTabController.loadValues();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -88,6 +93,7 @@ public class Main extends Application {
     private void onSaveConfig(){
         crawlerTabController.saveValues();
         instaTabController.saveValues();
+        flickrTabController.saveValues();
 
         try {
             PreferenceService.saveToXMLFile(GlobalConfig.getInstance(), null);

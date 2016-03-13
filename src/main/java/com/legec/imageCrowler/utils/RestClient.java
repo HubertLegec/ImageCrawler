@@ -2,6 +2,7 @@ package com.legec.imageCrowler.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class RestClient {
             String result = executeGet(url);
             return mapToObject(result, classToReturn);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -56,9 +58,20 @@ public class RestClient {
     }
 
     private Object mapToObject(String json, Class classToReturn) {
-        Gson gson = new GsonBuilder().create();
-        Object result = gson.fromJson(json, classToReturn);
-        return result;
+        try {
+            String formattedJson;
+            if(json.startsWith("{")){
+                formattedJson = json;
+            } else {
+                formattedJson = json.substring(json.indexOf("{"), json.lastIndexOf("}")+1);
+            }
+            Gson gson = new GsonBuilder().create();
+            Object result = gson.fromJson(formattedJson, classToReturn);
+            return result;
+        } catch (JsonSyntaxException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String prepareUrl(String url) {

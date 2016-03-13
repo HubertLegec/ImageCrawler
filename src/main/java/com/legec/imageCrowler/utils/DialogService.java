@@ -19,6 +19,16 @@ public class DialogService {
         return dialog.showAndWait();
     }
 
+    public static Optional<String> showAddURLDialog(Window window){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.initOwner(window);
+        dialog.setContentText("http://");
+        dialog.setTitle("New seed URL");
+        dialog.setHeaderText("Add new seed URL:");
+        Optional<String> result = dialog.showAndWait();
+        return result.map( val -> val.startsWith("http") ? val : "http://" + val);
+    }
+
     public static File showStorageDirectoryDialog(Window window){
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Storage folder");
