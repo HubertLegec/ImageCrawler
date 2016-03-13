@@ -2,15 +2,18 @@ package com.legec.imageCrowler.crawler;
 
 import com.google.common.io.Files;
 import com.legec.imageCrowler.utils.Callback;
+import com.sun.corba.se.spi.monitoring.StringMonitoredAttributeBase;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.BinaryParseData;
+import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -26,6 +29,7 @@ public class ImageCrawler extends WebCrawler {
 
     private static File storageFolder;
     private static List<String> crawlDomains;
+    private static List<String> tagList;
     private static String imageNamePrefix;
     private static int nameCounter = 0;
     private static boolean tagsActive;
@@ -33,9 +37,11 @@ public class ImageCrawler extends WebCrawler {
     private static Callback stopCallback;
     private static boolean callbackSent = false;
 
-    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, int maxNumOfImg, List<String> tags, boolean areTagsActive, Callback callback) {
+    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, int maxNumOfImg,
+                                 List<String> tags, boolean areTagsActive, Callback callback) {
         crawlDomains = new LinkedList<>();
         tagsActive = areTagsActive;
+        tagList = tags;
         maxNumberOfImages = maxNumOfImg;
         stopCallback = callback;
         domain.forEach(el -> {
@@ -67,7 +73,7 @@ public class ImageCrawler extends WebCrawler {
             return false;
         }
 
-        if (imgPatterns.matcher(href).matches()) {
+        if (imgPatterns.matcher(href).matches() && matchTags(referringPage, url)) {
             return true;
         }
 
@@ -88,6 +94,7 @@ public class ImageCrawler extends WebCrawler {
             }
             return;
         }
+
         String url = page.getWebURL().getURL();
 
         // We are only interested in processing images which are bigger than 10k
@@ -118,7 +125,38 @@ public class ImageCrawler extends WebCrawler {
         return UUID.randomUUID() + extension;
     }
 
-    public static int getNameCounter() {
-        return nameCounter;
+    private boolean matchTags(Page page, WebURL url) {
+        if (!tagsActive) {
+            return true;
+        }
+        HtmlParseData parseData = (HtmlParseData) page.getParseData();
+        if (parseData == null) {
+            return false;
+        }
+        Map<String, String> metaTags = parseData.getMetaTags();
+        if (metaTags == null || metaTags.size() == 0) {
+            return false;
+        }
+
+        for (String tag : tagList) {
+            for (String meta : metaTags.values()) {
+                if (contains(meta, tag)) {
+                    return true;
+                }
+            }
+
+            if (contains(url.toString(), tag)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean contains(String container, String content) {
+        if (container.toLowerCase().contains(content.toLowerCase())) {
+            return true;
+        }
+        return false;
     }
 }
