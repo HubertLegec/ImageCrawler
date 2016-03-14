@@ -23,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.log4j.PropertyConfigurator;
+import org.controlsfx.control.Notifications;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,6 +84,7 @@ public class Main extends Application {
             crawlerTabController.loadValues();
             instaTabController.loadValues();
             flickrTabController.loadValues();
+            Notifications.create().title("Load configuration").text("Completed successfully").show();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -100,6 +102,7 @@ public class Main extends Application {
 
         try {
             PreferenceService.saveToXMLFile(GlobalConfig.getInstance(), null);
+            Notifications.create().title("Save configuration").text("Completed successfully").show();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
