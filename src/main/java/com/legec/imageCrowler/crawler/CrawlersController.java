@@ -8,11 +8,14 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Hubert on 02.03.2016.
  */
 public class CrawlersController implements BaseCrawlController {
+    private static final Logger logger = LoggerFactory.getLogger(CrawlersController.class);
     private CrawlController crawlController;
     private boolean ready = false;
 
@@ -41,6 +44,7 @@ public class CrawlersController implements BaseCrawlController {
     @Override
     public boolean start() {
         if (ready) {
+            logger.debug("Crawler - start");
             CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
             ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
                     config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
@@ -52,12 +56,14 @@ public class CrawlersController implements BaseCrawlController {
 
     @Override
     public void startWithCallback(Callback callback) {
+        logger.debug("Crawler - start with callback");
         CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
         ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
                 config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
         crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {
             crawlController.waitUntilFinish();
+            logger.debug("Crawler - finish");
             callback.execute();
         });
         thread.start();
@@ -65,6 +71,7 @@ public class CrawlersController implements BaseCrawlController {
 
     @Override
     public void stop() {
+        logger.debug("Crawler - shutdown");
         crawlController.shutdown();
     }
 }

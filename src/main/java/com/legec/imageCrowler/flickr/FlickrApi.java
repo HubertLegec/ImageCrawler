@@ -4,6 +4,8 @@ import com.legec.imageCrowler.flickr.dto.Photo;
 import com.legec.imageCrowler.flickr.dto.Photos;
 import com.legec.imageCrowler.flickr.dto.ResultSet;
 import com.legec.imageCrowler.utils.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * Created by hubert.legec on 2016-03-13.
  */
 public class FlickrApi {
+    private static final Logger logger = LoggerFactory.getLogger(FlickrApi.class);
     private RestClient restClient;
     private String token;
 
@@ -47,11 +50,13 @@ public class FlickrApi {
         params.put("method", "flickr.photos.search");
         params.put("api_key", token);
         params.put("text", text);
+        logger.debug("Flickr API - text to search: " + text);
         if(howMuch > 0 && howMuch <= 500) {
             params.put("per_page", String.valueOf(howMuch));
         }
 
         ResultSet resultSet = (ResultSet) restClient.executeGetToJSONWithParams("rest", ResultSet.class, params);
+        logger.debug("Flickr API - getPhotosByText: found " + resultSet.photos.photo.size() + " photos");
         return resultSet.photos;
     }
 
@@ -67,6 +72,8 @@ public class FlickrApi {
             builder.deleteCharAt(builder.length()-1);
         }
 
+        logger.debug("Flickr API - tags to find: " + builder.toString());
+
         params.put("tags", builder.toString());
 
         if(howMuch > 0 && howMuch <= 500) {
@@ -74,6 +81,7 @@ public class FlickrApi {
         }
 
         ResultSet resultSet = (ResultSet) restClient.executeGetToJSONWithParams("rest", ResultSet.class, params);
+        logger.debug("Flickr API - getPhotosByTags: found " + resultSet.photos.photo.size() + " photos");
         return resultSet.photos;
     }
 
@@ -93,6 +101,7 @@ public class FlickrApi {
         builder.append(photo.secret);
         builder.append(".jpg");
 
+        logger.debug("Flickr API - photo URL: " + builder.toString());
         return builder.toString();
     }
 }
