@@ -2,7 +2,6 @@ package com.legec.imageCrowler.crawler;
 
 import com.google.common.io.Files;
 import com.legec.imageCrowler.utils.Callback;
-import com.sun.corba.se.spi.monitoring.StringMonitoredAttributeBase;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.BinaryParseData;
@@ -31,7 +30,7 @@ public class ImageCrawler extends WebCrawler {
     private static List<String> crawlDomains;
     private static List<String> tagList;
     private static String imageNamePrefix;
-    private static int nameCounter = 0;
+    private static int nameCounter;
     private static boolean tagsActive;
     private static int maxNumberOfImages;
     private static Callback stopCallback;
@@ -44,11 +43,10 @@ public class ImageCrawler extends WebCrawler {
         tagList = tags;
         maxNumberOfImages = maxNumOfImg;
         stopCallback = callback;
+        nameCounter = 0;
         domain.forEach(el -> {
-            crawlDomains.add(el);
-            if (el.contains("www.")) {
-                crawlDomains.add(el.replace("www.", ""));
-            }
+            String url = el.replace("http://", "").replace("www.", "");
+            crawlDomains.add(url);
         });
         imageNamePrefix = imageNamePref;
 
@@ -78,7 +76,7 @@ public class ImageCrawler extends WebCrawler {
         }
 
         for (String domain : crawlDomains) {
-            if (href.startsWith(domain)) {
+            if (href.contains(domain)) {
                 return true;
             }
         }
