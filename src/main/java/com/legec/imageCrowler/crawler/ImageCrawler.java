@@ -1,6 +1,5 @@
 package com.legec.imageCrowler.crawler;
 
-import com.google.common.io.Files;
 import com.legec.imageCrowler.utils.Callback;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -8,8 +7,11 @@ import edu.uci.ics.crawler4j.parser.BinaryParseData;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,24 +35,27 @@ public class ImageCrawler extends WebCrawler {
     private static int nameCounter;
     private static boolean tagsActive;
     private static int maxNumberOfImages;
+    private static int minImageHeight;
+    private static int minImageWidth;
     private static Callback stopCallback;
     private static boolean callbackSent = false;
 
-    public static void configure(List<String> domain, String storageFolderName, String imageNamePref, int maxNumOfImg,
-                                 List<String> tags, boolean areTagsActive, Callback callback) {
+    public static void configure(CrawlerConfig config, Callback callback) {
         crawlDomains = new LinkedList<>();
-        tagsActive = areTagsActive;
-        tagList = tags;
-        maxNumberOfImages = maxNumOfImg;
+        tagsActive = config.isTagsActive();
+        tagList = config.getTags();
+        maxNumberOfImages = config.getMaxNumberOfImages();
+        minImageHeight = config.getMinImageHeight();
+        minImageWidth = config.getMinImageWidth();
         stopCallback = callback;
         nameCounter = 0;
-        domain.forEach(el -> {
+        config.getSeedURLs().forEach(el -> {
             String url = el.replace("http://", "").replace("www.", "");
             crawlDomains.add(url);
         });
-        imageNamePrefix = imageNamePref;
+        imageNamePrefix = config.getFileNamePrefix();
 
-        storageFolder = new File(storageFolderName);
+        storageFolder = new File(config.getStorageFolder());
         if (!storageFolder.exists()) {
             storageFolder.mkdirs();
         }
@@ -93,25 +98,35 @@ public class ImageCrawler extends WebCrawler {
             return;
         }
 
-        String url = page.getWebURL().getURL();
+        String stringUrl = page.getWebURL().getURL();
 
         // We are only interested in processing images which are bigger than 10k
-        if (!imgPatterns.matcher(url).matches() ||
+        if (!imgPatterns.matcher(stringUrl).matches() ||
                 !((page.getParseData() instanceof BinaryParseData) || (page.getContentData().length < (10 * 1024)))) {
             return;
         }
 
-        // get a unique name for storing this image
-        String extension = url.substring(url.lastIndexOf('.'));
-
-        // store image
-        String filename = storageFolder.getAbsolutePath() + "/" + getFileName(extension);
+        String filename = "";
         try {
-            Files.write(page.getContentData(), new File(filename));
+            URL url = new URL(stringUrl);
+            BufferedImage image = ImageIO.read(url);
+
+            if(!checkImageSize(image.getWidth(), image.getHeight())){
+                return;
+            }
+
+            // get a unique name for storing this image
+            String extension = stringUrl.substring(stringUrl.lastIndexOf('.'));
+
+            // store image
+            filename = storageFolder.getAbsolutePath() + "/" + getFileName(extension);
+
+            ImageIO.write(image, extension.substring(1) ,new File(filename));
             logger.info("Stored: {}", url);
         } catch (IOException iox) {
             logger.error("Failed to write file: " + filename, iox);
         }
+
     }
 
     private static String getFileName(String extension) {
@@ -156,5 +171,15 @@ public class ImageCrawler extends WebCrawler {
             return true;
         }
         return false;
+    }
+
+    private boolean checkImageSize(int width, int height) {
+        if (minImageWidth > 0 && minImageWidth > width) {
+            return false;
+        }
+        if (minImageHeight > 0 && minImageHeight > height) {
+            return false;
+        }
+        return true;
     }
 }

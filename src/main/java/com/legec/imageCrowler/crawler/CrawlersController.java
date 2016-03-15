@@ -46,8 +46,7 @@ public class CrawlersController implements BaseCrawlController {
         if (ready) {
             logger.debug("Crawler - start");
             CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
-            ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
-                    config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
+            ImageCrawler.configure(config, () -> crawlController.shutdown());
             crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
             return true;
         }
@@ -58,8 +57,7 @@ public class CrawlersController implements BaseCrawlController {
     public void startWithCallback(Callback callback) {
         logger.debug("Crawler - start with callback");
         CrawlerConfig config = GlobalConfig.getInstance().getCrawlerConfig();
-        ImageCrawler.configure(config.getSeedURLs(), config.getStorageFolder(), config.getFileNamePrefix(),
-                config.getMaxNumberOfImages(), config.getTags(), config.isTagsActive(), () -> crawlController.shutdown());
+        ImageCrawler.configure(config, () -> crawlController.shutdown());
         crawlController.startNonBlocking(ImageCrawler.class, config.getNumberOfThreads());
         Thread thread = new Thread(() -> {
             crawlController.waitUntilFinish();

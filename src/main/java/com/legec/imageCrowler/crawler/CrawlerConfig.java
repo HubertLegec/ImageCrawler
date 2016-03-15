@@ -13,6 +13,8 @@ public class CrawlerConfig extends BaseConfig {
     private boolean tagsActive = false;
     private int numberOfThreads;
     private int crawlDepth;
+    private int minImageWidth;
+    private int minImageHeight;
 
     public int getCrawlDepth() {
         return crawlDepth;
@@ -45,4 +47,12 @@ public class CrawlerConfig extends BaseConfig {
     public void setTagsActive(boolean tagsActive) {
         this.tagsActive = tagsActive;
     }
+
+    public int getMinImageWidth() { return minImageWidth; }
+
+    public void setMinImageWidth(int minImageWidth) { this.minImageWidth = minImageWidth; }
+
+    public int getMinImageHeight() { return minImageHeight; }
+
+    public void setMinImageHeight(int minImageHeight) { this.minImageHeight = minImageHeight; }
 }

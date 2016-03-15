@@ -9,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -49,6 +48,10 @@ public class CrawlerTabController {
     private ProgressIndicator progressIndicator;
     @FXML
     private TextField maxNumberOfImages;
+    @FXML
+    private TextField minWidthTF;
+    @FXML
+    private TextField minHeightTF;
 
     private CrawlersController crawlersController = new CrawlersController();
     private boolean crawlerWorks = false;
@@ -153,6 +156,16 @@ public class CrawlerTabController {
         } else {
             config.setMaxNumberOfImages(-1);
         }
+        if (minHeightTF.getText().isEmpty()) {
+            config.setMinImageHeight(-1);
+        } else {
+            config.setMinImageHeight(Integer.parseInt(minHeightTF.getText()));
+        }
+        if (minWidthTF.getText().isEmpty()) {
+            config.setMinImageWidth(-1);
+        } else {
+            config.setMinImageWidth(Integer.parseInt(minWidthTF.getText()));
+        }
         config.setStorageFolder(storageFolderTF.getText());
         config.setNumberOfThreads(numberOfCrowlersCB.getValue());
     }
@@ -175,6 +188,7 @@ public class CrawlerTabController {
         } else {
             maxNumberOfImages.clear();
         }
+
         imageNamePrefixTF.setText(config.getFileNamePrefix());
         storageFolderTF.setText(config.getStorageFolder());
         numberOfCrowlersCB.setValue(config.getNumberOfThreads());
